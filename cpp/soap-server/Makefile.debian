@@ -1,0 +1,49 @@
+# Setup for gSOAP server version
+# Simeon Warner, 2007-02...
+# $Id: Makefile.debian,v 1.1 2007-07-20 18:40:20 simeon Exp $
+#
+# Edit this to the location of your gsoap installation:
+GSOAP_INCLUDE=/usr/include
+GSOAP_SRC=gsoap
+
+################## Makefile should not need configuration below this line ########################
+
+WSDL2H=$(GSOAP_INCLUDE)/bin/wsdl2h
+GSOAP=$(GSOAP_INCLUDE)/bin/soapcpp2
+SOAPH=$(GSOAP_INCLUDE)/stdsoap2.h
+SOAPC=$(GSOAP_SRC)/stdsoap2.c
+SOAPCPP=$(GSOAP_SRC)/stdsoap2.cpp
+
+# DocSim libs
+#
+DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../lib/KeyMap.o ../lib/MarkedDoc.o ../lib/KeyTable.o ../lib/DocPair.o ../lib/kgrams.o ../lib/files.o ../lib/options.o
+
+# Compiler settings
+#
+CPP=g++
+LIBS=
+COFLAGS=-O
+CWFLAGS=-Wall
+CIFLAGS=-I../..
+CMFLAGS=
+CFLAGS= $(CWFLAGS) $(COFLAGS) $(CIFLAGS) $(CMFLAGS)
+
+all:	overlapd
+
+overlap.h: overlap.wsdl typemap.dat
+	$(WSDL2H) -s overlap.wsdl
+
+soapServer.cpp: overlap.h
+	$(GSOAP) overlap.h
+
+test_server: test_server.cpp soapServer.cpp
+	$(CPP) $(CFLAGS) -I gsoap -o test_server test_server.cpp soapC.cpp soapServer.cpp $(SOAPC) $(LIBS)
+
+overlapd: overlapd.cpp soapServer.cpp
+	$(CPP) $(CFLAGS) -I gsoap -I ../lib -o overlapd overlapd.cpp soapC.cpp soapServer.cpp $(SOAPC) $(DSOBJ) $(LIBS)
+
+clean:
+		rm -f *.o soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h
+
+distclean:
+		rm -f *.o *.wsdl *.xsd *.xml *.nsmap *.log soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h quote

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="overlap"
+ targetNamespace="http://arxiv.org/schemas/overlap.wsdl"
+ xmlns:tns="http://arxiv.org/schemas/overlap.wsdl"
+ xmlns:overlap="http://arxiv.org/schemas/overlap.xsd"
+ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
+ xmlns:DIME="http://schemas.xmlsoap.org/ws/2002/04/dime/wsdl/"
+ xmlns:WSDL="http://schemas.xmlsoap.org/wsdl/"
+ xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+<message name="overlapRequest">
+ <part name="nat" type="xsd:string"/>
+</message>
+<message name="overlapResponse">
+ <part name="matches" type="xsd:int"/>
+ <part name="docs" type="xsd:string"/>
+</message>
+
+<message name="statusRequest">
+ <!--part name="nat" type="xsd:string"/-->
+</message>
+<message name="statusResponse">
+ <part name="status" type="xsd:string"/>
+</message>
+
+<portType name="overlapPortType">
+ <operation name="overlap">
+  <input message="tns:overlapRequest"/>
+  <output message="tns:overlapResponse"/>
+ </operation>
+ <operation name="status">
+  <input message="tns:statusRequest"/>
+  <output message="tns:statusResponse"/>
+ </operation>
+</portType>
+
+<binding name="overlap" type="tns:overlapPortType">
+ <SOAP:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+ <operation name="overlap">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="http://arxiv.org/schemas/overlap.xsd" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="http://arxiv.org/schemas/overlap.xsd" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+ <operation name="status">
+  <SOAP:operation style="rpc" soapAction=""/>
+  <input>
+     <SOAP:body use="encoded" namespace="http://arxiv.org/schemas/overlap.xsd" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </input>
+  <output>
+     <SOAP:body use="encoded" namespace="http://arxiv.org/schemas/overlap.xsd" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  </output>
+ </operation>
+</binding>
+
+<service name="overlap">
+ <port name="overlap" binding="tns:overlap">
+  <SOAP:address location="http://localhost:8081"/>
+ </port>
+</service>
+
+</definitions>

@@ -1,0 +1,115 @@
+// docsim-compare.cpp
+// Compare a new document with data in an existing map
+// Simeon Warner - 2005-08-10...
+//
+// $Id: docsim-compare.cpp,v 1.2 2011-02-16 23:19:33 simeon Exp $
+//
+#include "definitions.h"
+#include "options.h"
+#include "Logger.h"
+#include "DocSet.h"
+#include "DocInfo.h"
+#include "kgrams.h"
+#include "files.h"
+#include <fstream>
+
+string myname="docsim-compare";
+
+int main(int argc, char* argv[])
+{
+  VERBOSE=0;
+  VERY_VERBOSE=0;
+
+  // Read options using standard code for all of DocSim programs
+  readOptions(argc, argv, (const char*)"d:o:f:m:St:T:b:n:", myname, "Compare a new document with data in an existing map");
+ 
+  // Load new file and create keymap
+  keymap newkeys;
+  if (filename1=="") {
+    cerr << myname << ": No filename specified, use -f <filename1>\n";
+    exit(1);
+  }
+  string newdocFile=prependPath(dataDir,filename1);
+  DocInfo newdoc(newdocFile,1);
+  newdoc.addToKeymap(newkeys);
+  string newdocKeyMapFile=prependPath(baseDir,"newdoc.keymap");
+  ofstream ndout;
+  ndout.open(newdocKeyMapFile.c_str(),ios_base::out);
+  ndout << newkeys;
+  ndout.close();
+  cout << myname << ": read new doc with " << newkeys.size() << " keys, keymap dumped to " << newdocKeyMapFile << endl;
+  
+  // Now, somehow get a keymap of the overlap. What we load depends on the command
+  // line options...
+  //
+  // At the end of this if block we will have shared keys between new doc and
+  // corpus in sharedkeys
+  keymap sharedkeys;
+  //
+  if (keyMapFile!="") {
+    // Load existsing keymap
+    keymap allkeys;
+    string fullKeyMapFile=prependPath(baseDir,keyMapFile);
+    ifstream kin;
+    kin.open(fullKeyMapFile.c_str(),ios_base::in);
+    if (!kin.good()) {
+      cerr << myname << ": Error - failed to open '" << fullKeyMapFile << "' to read keymap, aborting!" << endl;
+      exit(2);
+    }
+    kin >> allkeys;
+    kin.close();
+    cout << myname << ": read keymap with " << allkeys.size() << " keys." << endl;
+    if (allkeys.size()==0) {
+      cerr << myname << ": no keys read, aborting" << endl;
+      exit(1);
+    }
+    filterKeymap(allkeys,newkeys,sharedkeys);
+  } else if (keyTableFile!="" || keyTableBase!="") {
+    KeyTable dummyKT(bitsInKeyTable,true);
+    intv indexes;
+    dummyKT.keysToIndexes(newkeys,indexes);
+    ofstream iout;
+    string indexesFile=prependPath(baseDir,"newdoc.indexes");
+    iout.open(indexesFile.c_str(),ios_base::out);
+    dummyKT.writeIndexes(iout,indexes);
+    iout.close();
+    cout << myname << ": written newdoc indexes to " << indexesFile << endl;
+    if (keyTableFile!="") {
+      string fullKeyTableFile=prependPath(baseDir,keyTableFile);
+      ifstream kin;
+      kin.open(fullKeyTableFile.c_str(),ios_base::in);
+      if (!kin.good()) {
+        cerr << myname << ": Error - failed to open '" << fullKeyTableFile << "' to read KeyTable, aborting!" << endl;
+        exit(2);
+      }
+      dummyKT.readTables123(kin,&indexes,&sharedkeys);
+      kin.close();  
+    } else { // if (keyTableBase!="") {
+      string fullKeyTableBase=prependPath(baseDir,keyTableBase);
+      dummyKT.readMultiFile(fullKeyTableBase,&indexes,&sharedkeys);
+    }
+  } else {
+    cerr << myname << ": Error - didn't find keyMapFile (-K), keyTableFile (-t) or keyTableBase (-T)." << endl;
+    exit(2);
+  }
+ 
+  cout << myname << ": " << sharedkeys.size() << " keys from new doc appear in corpus\n";
+
+  string sharedkeysFile=prependPath(baseDir,"sharedkeys.txt");
+  ofstream sout;
+  sout.open(sharedkeysFile.c_str(),ios_base::out);
+  sout << sharedkeys;
+  sout.close();
+  cout << myname << ": written shared keys keymap to " << sharedkeysFile << endl;
+
+  DocPairVector dpv;
+  getCommonDocs(sharedkeys, dpv, keysForMatch);
+  string candidateFile=prependPath(baseDir,"candidates.dpv");
+  cout << myname << ": Writing " << dpv.size() << " overlapping (>=" << keysForMatch << " keys) docs to " << candidateFile << endl;
+  ofstream cdout;
+  cdout.open(candidateFile.c_str(),ios_base::out);
+  cdout << dpv;
+  cdout.close();
+  
+  return 0;
+}
