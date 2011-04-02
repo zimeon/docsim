@@ -31,7 +31,7 @@ string get_pstats_string(void) {
     unsigned lib;//        library
     unsigned data;//       data/stack
     //unsigned dt;//         dirty pages (unused in Linux 2.6)
-    fscanf(pf, "%u %u %u %u %u %u", &size, &resident, &share, &text, &lib, &data);
+    (void)fscanf(pf, "%u %u %u %u %u %u", &size, &resident, &share, &text, &lib, &data);
     fclose(pf);
     
     // Write to string stream an get string
