@@ -1,4 +1,4 @@
-//
+// Get process statistics from Linux using data in /proc
 //
 // Code based on that from Trent (tapted) at 
 // http://www.linuxforums.org/forum/linux-programming-scripting/11703-c-function-returns-cpu-memory-usage.html
@@ -30,19 +30,22 @@ string get_pstats_string(void) {
     unsigned text;//       text (code)
     unsigned lib;//        library
     unsigned data;//       data/stack
-    //unsigned dt;//         dirty pages (unused in Linux 2.6)
-    (void)fscanf(pf, "%u %u %u %u %u %u", &size, &resident, &share, &text, &lib, &data);
+    int ret=fscanf(pf, "%u %u %u %u %u %u", &size, &resident, &share, &text, &lib, &data);
     fclose(pf);
-    
-    // Write to string stream an get string
-    sout << "data=" << (data/256.0)
-         << "MB: share=" << (share/256.0)
-         << "MB code=" << (text/256.0)
-         << "MB lib=" << (lib/256.0)
-         << "MB  (total=" << (size/256.0)
-         << "MB, pid " << pid << ")";  
+
+    if (ret==6) {    
+      // Write to string stream an get string
+      sout << "data=" << (data/256.0)
+           << "MB: share=" << (share/256.0)
+           << "MB code=" << (text/256.0)
+           << "MB lib=" << (lib/256.0)
+           << "MB  (total=" << (size/256.0)
+           << "MB, pid " << pid << ")";  
+    } else {
+      sout << "Failed to read/parse process stats for pid " << pid;
+    }
   } else {
-    sout << "Can't read process stats for pid " << pid;
+    sout << "Failed to read process stats for pid " << pid;
   }
   return(sout.str());
 }
