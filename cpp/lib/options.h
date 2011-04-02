@@ -2,7 +2,7 @@
 // Shared code to read command line arguments in all DocSim codes
 // Simeon Warner - 2005-08-29...
 //
-// $Id: options.h,v 1.3 2011-02-16 22:56:17 simeon Exp $
+// $Id: options.h,v 1.4 2011-04-02 01:56:45 simeon Exp $
 //
 #ifndef __INC_Options
 #define __INC_Options 1
@@ -31,6 +31,7 @@ extern string keyMapFile;
 extern int bitsInKeyTable;
 extern string keyTableFile;
 extern string keyTableBase;
+extern bool writeSharedKeys;
 extern int keysForMatch;
 extern bool compare;
 extern string comparisonFile;

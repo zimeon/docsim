@@ -11,7 +11,7 @@
 // table1 [ 0 ... 2^bits-1 ], one integer for each short key
 // values 0 ... max_docid -> document id where one document has key
 //        -ve             -> pointer into table2
-//        EMPTY           -> element not used
+//        EMPTY           -> element not used (use value INT_MAX)
 //
 // table2 [ 0 ... TABLE2_SIZE-1 ], two integers for each entry
 // entries are indexed by -(value in table1)*2 with values of
@@ -29,7 +29,7 @@
 // but the whole system will break down long before then. Current code has
 // a limit of 1,000,000 built in with strict checks)
 //
-// $Id: KeyTable.cpp,v 1.9 2011-03-03 14:20:24 simeon Exp $
+// $Id: KeyTable.cpp,v 1.10 2011-04-02 16:26:03 simeon Exp $
 
 #include "definitions.h"
 #include "options.h"
@@ -38,7 +38,7 @@
 #include "KeyTable.h"
 #include "DocPair.h"
 #include "pstats.h"
-#include <values.h>        // for MAXINT
+#include <limits.h>        // for INT_MAX
 #include <math.h>          // for pow()
 #include <string.h>        // for strlen()
 #include <sstream>         // for use in writeMultiFile
@@ -90,7 +90,7 @@ KeyTable::KeyTable(int bits, bool dummy, int selectBits, int selectBitsMatch)
     SELECT_MATCH=selectBitsMatch << bits;
     cerr << "KeyTable::KeyTable: creating table SELECT_MASK=" << hex << SELECT_MASK << " and SELECT_MATCH=" << SELECT_MATCH << dec << endl;
   }
-  EMPTY=MAXINT;
+  EMPTY=INT_MAX;
   //
   if (dummy) {
     // Don't actually assign any storage in the dummy table
@@ -323,7 +323,7 @@ int KeyTable::addKeyTable3(int i, int docid)
 void KeyTable::getDocids(intv& docids, int i)
 {
 #ifdef STRICT_CHECKS
-  if (i<1 || i>TABLE1_SIZE) {
+  if (i<0 || i>=TABLE1_SIZE) {
     cerr << "KeyTable::getDocids: Out of bounds error, attempt to access KeyTable index " << i << " where TABLE1_SIZE=" << TABLE1_SIZE << endl;
     exit(2);
   }

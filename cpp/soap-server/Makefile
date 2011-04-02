@@ -1,6 +1,6 @@
 # Setup for gSOAP server version
 # Simeon Warner, 2007-02...
-# $Id: Makefile,v 1.8 2011-02-28 23:49:53 simeon Exp $
+# $Id: Makefile,v 1.9 2011-03-10 04:59:44 simeon Exp $
 #
 # Edit this to the location of your gsoap installation:
 
@@ -21,10 +21,14 @@ DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../li
 
 # Compiler settings
 #
+# gcc 4.3 complains about use of deprecated hash_set and hash_map, suggesting instead 
+# use of unordered_set and unordered_map. However, to use these one must enable
+# "compiler and library support for the upcoming ISO C++ standard, C++0x. This support 
+# is currently experimental". Thus, for now, add -Wno-depreacted to avoid warnings.
 CPP=g++
 LIBS=
 COFLAGS=-O
-CWFLAGS=-Wall
+CWFLAGS=-Wno-deprecated
 CIFLAGS=-I../..
 CMFLAGS=
 CFLAGS= $(CWFLAGS) $(COFLAGS) $(CIFLAGS) $(CMFLAGS)

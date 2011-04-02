@@ -1,6 +1,6 @@
-// Test code for kgram.ccp/kgram.h
+// Test code for KeyTable
 // Simeon Warner - 2005-07-18
-// $Id: test_KeyTable.cpp,v 1.5 2008-11-19 22:56:50 simeon Exp $
+// $Id: test_KeyTable.cpp,v 1.6 2011-04-02 16:27:15 simeon Exp $
 
 #include "definitions.h"
 #include "kgrams.h"
@@ -17,6 +17,16 @@ int main(int argc, char* argv[])
   cout << "Created KeyTable k, stats are:" << endl;
   k.writeStats(cout); 
   cout << "Table is:" << endl << k;
+  //
+  // Simple range checks
+  cout << endl << "KeyTable.getDocids RANGE CHECKS" << endl;
+  intv docids;
+  cout << "  min=0" << endl;
+  k.getDocids(docids,0);       //OK, min
+  cout << "  max=1048575" << endl;
+  k.getDocids(docids,1048575); //OK, max
+  //kt.getDocids(docids,-1);      //one too small
+  //kt.getDocids(docids,1048576); //one too big
   //
   // Now add 10 different elements, 
   for (int j=1; j<=10; j++) {

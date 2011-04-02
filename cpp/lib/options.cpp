@@ -7,7 +7,7 @@
 //
 // Simeon Warner - 2005-08-29...
 //
-// $Id: options.cpp,v 1.11 2011-03-03 14:20:24 simeon Exp $
+// $Id: options.cpp,v 1.14 2011-04-02 01:56:45 simeon Exp $
 //
 #include "definitions.h"
 #include "options.h"
@@ -40,6 +40,7 @@ int bitsInKeyTable=20;
 string keyTableFile="";
 string keyTableBase="";
 int keysForMatch=10;
+bool writeSharedKeys=false;
 bool compare=false;
 string comparisonFile="comparison";  // will have _long.html or _short.html prepended
 bool comparisonStatsOnly=false;
@@ -135,6 +136,10 @@ int readOptions(int argc, char* argv[], string argsUsed, string myname, string u
         rangeStart=atoi(("0"+range.substr(0,k)).c_str());
         rangeEnd=atoi(("0"+range.substr(k+1)).c_str());
       }
+      break;
+    case 'w':
+      writeSharedKeys=true;
+      break;
     case 'x':
       selectBits=atoi(optarg);
       break;
@@ -217,12 +222,12 @@ void writeUsage(char* args_str, string myname, string usage)
       longArgs << "  -F <filename2>     Specify normalized txt to compare filename1 against" << endl;
       break;
     case 'k':
-      shortArgs << " -k <kgram>";
-      longArgs << "  -k <kgram>         Specify kgram string" << endl;
+      shortArgs << " -k <key>";
+      longArgs << "  -k <key>           Specify kgram key (64bit hex)" << endl;
       break;
     case 'K':
-      shortArgs << " -K <key>";
-      longArgs << "  -K <key>           Specify kgram key (64bit hex)" << endl;
+      shortArgs << " -K <kgram>";
+      longArgs << "  -K <kgram>         Specify kgram string" << endl;
       break;
     case 'l':
       shortArgs << " -l <link1>";
@@ -256,6 +261,9 @@ void writeUsage(char* args_str, string myname, string usage)
       shortArgs << " -T <KeyTableBase>";
       longArgs << "  -T <KeyTableBase>  Set base name of KeyTable files (e.g. dir/allkeys for dir/allkeys_#.keytable)" << endl;
       break;
+    case 'w':
+      shortArgs << " -w";
+      longArgs << "  -w                 Write shared keys table (tables23 in KeyTable, index is XX and 6 digit hex num)" << endl;
     case 'x':
       shortArgs << " -x <selectBits>";
       longArgs << "  -x <selectBits>    Number of bits of key to base selection on (must be > #bits from -b)" << endl;
@@ -264,7 +272,7 @@ void writeUsage(char* args_str, string myname, string usage)
       shortArgs << " -X <selectMatch>";
       longArgs << "  -X <selectMatch>   Binary match used on high bits (selectBits..#bits with -x/-b)" << endl;
       break;
-    case ':': case 'v': case 'V': case 'h': case 'H':
+    case ':': case '+': case 'v': case 'V': case 'h': case 'H':
       break;
     default:
       shortArgs << " -" << *j << " <?>";
@@ -274,9 +282,9 @@ void writeUsage(char* args_str, string myname, string usage)
   }
   
   
-  longArgs << "  -v                 verbose" << endl;
+  longArgs << "  -v                 Verbose" << endl;
   longArgs << "  -V                 VERY verbose (implies -v)" << endl;
-  longArgs << "  -h | -h            this help" << endl;
+  longArgs << "  -h | -H            This help" << endl;
   cerr << shortArgs.str() << endl << longArgs.str() << endl 
        << usage << endl << endl;
 }

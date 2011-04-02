@@ -2,7 +2,7 @@
 // document and has associated methods from processing
 // single documents.
 // Simeon Warner - 2005-07...
-// $Id: DocInfo.cpp,v 1.2 2011-02-16 23:18:22 simeon Exp $
+// $Id: DocInfo.cpp,v 1.3 2011-03-09 23:55:17 simeon Exp $
 
 #include "definitions.h"
 #include "options.h"
@@ -177,21 +177,40 @@ void DocInfo::addToKeyTable(KeyTable& kt, int maxDupesToCount)
 // Look for kgramkey key in this document, returns (char*) string or NULL
 // if not found
 //
-char* DocInfo::findKgramInDoc(kgramkey key)
+// If bits is specified as a positive value then this is used to mask
+// the kgramkeys in the document so that only the last bits bits are
+// matched. This allows one to search for truncated kgramkey values. 
+//
+char* DocInfo::findKgramInDoc(kgramkey key, int bits)
 {
   ifstream fin;     //stream associated with the file
   fin.open(filename.c_str(),ios_base::in);
   if (!fin.is_open()) {
-    cerr << "Error - failed to read from '" << filename << "'\n";
+    cerr << "Error - failed to read from '" << filename << "'" << endl;
     exit(2);
   }
-  
+
+  // Build so that mask is 0 or a set of bits 1's in the low order bits
+  kgramkey mask=0;
+  if (bits>(KGRAMKEYDIGITS*4)) {
+    cerr << "Error - number of bits to use in findKgramInDoc mask (" << bits << ") is larger than key size" << endl;
+    exit(2);
+  } else if (bits>0) {
+    for (int j=0; j<bits; j++) {
+      mask = (mask<<1 | 1);
+    }
+  }
+
   char* buf;
   char* match;
   int line=0;
   while ((buf=readLine(fin))!=(char*)NULL) { 
     if (VERY_VERBOSE) cout << "line[" << line++ << "]: " << buf << "\n";
-    match = findKgram(key,buf);
+    if (mask>0) {
+      match = findKgramWithMask(key,mask,buf);
+    } else {
+      match = findKgram(key,buf);
+    }
     if (match!=(char*)NULL) {
       fin.close();
       return(match);

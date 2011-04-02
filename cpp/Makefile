@@ -1,6 +1,6 @@
 # Makefile for DocSim suite
 # Simeon Warner - 2005-2011
-# $Id: Makefile,v 1.35 2011-03-03 19:00:50 simeon Exp $
+# $Id: Makefile,v 1.40 2011-04-02 16:26:48 simeon Exp $
 
 DOCSIMLIBS=lib/DocSet.o lib/DocInfo.o lib/Logger.o lib/KgramInfo.o lib/KeyMap.o lib/MarkedDoc.o lib/KeyTable.o lib/KeyTable3Element.o lib/DocPair.o lib/kgrams.o lib/options.o lib/files.o lib/pstats.o
 
@@ -8,20 +8,27 @@ LIBSLACK=/usr/local/lib/libslack.a
 
 STDLIBS=-lstdc++
 
+# gcc 4.3 complains about use of deprecated hash_set and hash_map, suggesting instead 
+# use of unordered_set and unordered_map. However, to use these one must enable
+# "compiler and library support for the upcoming ISO C++ standard, C++0x. This support 
+# is currently experimental". Thus, for now, add -Wno-depreacted to avoid warnings.
 CPP = gcc
 CPPDEFS = -D__LINUX__
-CPPFLAGS = -O -g -Wall -I . -I lib
+CPPFLAGS = -O -g -Wno-deprecated -I . -I lib
 
 .cpp.o:
 	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<
 
-all: docsimlibs docsim-analyze docsim-compare docsim-concat docsim-overlap findkgram overlapd
+all: docsimlibs docsim-analyze docsim-compare docsim-concat docsim-overlap findkgram kgramkey overlapd
 
 docsimlibs:
 	cd lib && make
 
 findkgram: $(DOCSIMLIBS) findkgram.o
 	gcc $(CPPFLAGS) -o findkgram findkgram.o $(DOCSIMLIBS) $(STDLIBS)
+
+kgramkey: $(DOCSIMLIBS) kgramkey.o
+	gcc $(CPPFLAGS) -o kgramkey kgramkey.o $(DOCSIMLIBS) $(STDLIBS)
 
 docsim-analyze: $(DOCSIMLIBS) docsim-analyze.o
 	gcc $(CPPFLAGS) -o docsim-analyze docsim-analyze.o $(DOCSIMLIBS) $(STDLIBS)
@@ -47,8 +54,8 @@ docsim_stats: docsimlibs
 	gcc $(CPPFLAGS) -DDOCUMENT_STATS -o docsim_stats $(DOCSIMLIBS) $(STDLIBS)
 	rm -f DocInfo.o
 
-test_kgrams: test_kgrams.o kgrams.o definitions.o
-	gcc $(CPPFLAGS) -o test_kgrams kgrams.o definitions.o test_kgrams.o $(STDLIBS)
+test_kgrams: test_kgrams.o docsimlibs
+	gcc $(CPPFLAGS) -o test_kgrams test_kgrams.o lib/kgrams.o lib/options.o $(STDLIBS)
 
 test_KgramInfo: test_KgramInfo.o KgramInfo.o kgrams.o definitions.o
 	gcc $(CPPFLAGS) -o test_KgramInfo KgramInfo.o kgrams.o definitions.o test_KgramInfo.o $(STDLIBS)
@@ -65,10 +72,10 @@ Logger.o: Logger.cpp Logger.h definitions.h
 
 files.o: files.cpp files.h definitions.h
 
-test_KeyTable: test_KeyTable.cpp lib/KeyTable.cpp lib/KeyTable.h lib/kgrams.o lib/KeyMap.o lib/KgramInfo.o lib/options.o
+test_KeyTable: test_KeyTable.cpp lib/KeyTable.cpp lib/KeyTable3Element.o lib/KeyTable.h lib/kgrams.o lib/KeyMap.o lib/KgramInfo.o lib/options.o lib/pstats.o
 	gcc $(CPPDEFS) $(CPPFLAGS) -DSTRICT_CHECKS -c lib/KeyTable.cpp
 	gcc $(CPPDEFS) $(CPPFLAGS) -DSTRICT_CHECKS -c test_KeyTable.cpp
-	gcc $(CPPFLAGS) -o test_KeyTable test_KeyTable.o lib/options.o lib/kgrams.o lib/KeyTable.o lib/KeyMap.o lib/KgramInfo.o lib/DocPair.o $(STDLIBS)
+	gcc $(CPPFLAGS) -o test_KeyTable test_KeyTable.o lib/options.o lib/kgrams.o lib/KeyTable.o lib/KeyTable3Element.o lib/KeyMap.o lib/KgramInfo.o lib/DocPair.o lib/pstats.o $(STDLIBS)
 	#rm KeyTable.o
 
 ####
@@ -123,6 +130,8 @@ clean:
 	rm -f docsim-overlap docsim-overlap.o
 	rm -f docsim-concat docsim-concat.o
 	rm -f findkgram findkgram.o
+	rm -f kgramkey kgramkey.o
+	rm -f test_kgrams test_kgrams.o
 	rm -f test_KeyTable test_KeyTable.o
 	cd lib && make clean
 	cd soap-server && make clean

@@ -2,7 +2,7 @@
 // Find kgram in a normalized txt file
 // Simeon Warner, 2005-
 //
-// $Id: findkgram.cpp,v 1.2 2011-03-03 14:20:24 simeon Exp $
+// $Id: findkgram.cpp,v 1.3 2011-03-10 00:01:39 simeon Exp $
 //
 #include "definitions.h"
 #include "options.h"
@@ -24,8 +24,10 @@ int main(int argc, char* argv[])
   VERBOSE=0;
   VERY_VERBOSE=0;
 
+  // bitsInKeyTable will be 0 unless -b option specifies a number of bits to compare with
+  bitsInKeyTable=0;
   // Read options using standard code for all of DocSim programs
-  readOptions(argc, argv, "f:k:K:svV", myname, "Look for kgrams matching either the kgram (-k) or kgram key (-K) specified, in the file given (-f).");
+  readOptions(argc, argv, "b:f:k:K:svV", myname, "Look for kgrams matching either the kgram (-k) or kgram key (-K) specified, in the file given (-f). Optional -b parameter specifies how many bits should be used for the comparison, if matches have been found in a KeyTable then this would usually be the number of bits used in the KeyTable.");
 
   // Just look for one kgramkey specified on the command line
   //
@@ -44,7 +46,7 @@ int main(int argc, char* argv[])
     char keystr[18];
     (void)strncpy(keystr,key.c_str(),18);
     //  char* key1="01fda04908cdbef3";
-    kk=stringToKgramkey(keystr);
+    kk=stringToKgramkey(keystr, (bitsInKeyTable+3)/4 );
   } else {
     cerr << myname << ": must specify either -k or -K options" << endl;
     exit(1);
@@ -53,7 +55,7 @@ int main(int argc, char* argv[])
       
   DocInfo doc;
   doc.filename=filename1.c_str();
-  char* match=doc.findKgramInDoc(kk);
+  char* match=doc.findKgramInDoc(kk,bitsInKeyTable);
   if (match!=(char*)NULL) {
     cout << myname << ": Found kgram: '" << match << "'" << endl;
   } else {

@@ -21,7 +21,7 @@
 // 2007-02-07 - use gSOAP 2.7.9 for SOAP interface [Simeon]
 // 2011-03-02 - tidied, uses logfile, implemented reload on USR1 [Simeon]
 //
-// $Id: overlapd.cpp,v 1.11 2011-03-03 14:34:29 simeon Exp $
+// $Id: overlapd.cpp,v 1.12 2011-03-10 05:02:18 simeon Exp $
 //
 #include "options.h"
 #include "DocInfo.h"
@@ -228,7 +228,7 @@ int overlap__overlap(struct soap *soap, char *nat, struct overlap__overlapRespon
 
   // set data about overlaps in response <docs>
   if (dpv.size() == 0) {
-    response.docs = "";
+    response.docs = (char*)"";
   } else {
     ostringstream osd (ostringstream::out);
     osd << dpv;
@@ -254,7 +254,7 @@ int overlap__overlap(struct soap *soap, char *nat, struct overlap__overlapRespon
 //
 int overlap__status(struct soap *soap, char *&status)
 { 
-  status = "I_AM_HAPPY";
+  status = (char*)"I_AM_HAPPY";
   logstream << myname << ": Returning result, SOAP_OK for status call" << endl << endl;
   return SOAP_OK;
 } 

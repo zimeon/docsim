@@ -23,7 +23,7 @@ public:
   // building and using keymaps
   void addToKeymap(keymap& keys, int maxDupesToCount=-1, bool winnow=true);
   void addToKeymap(istream& in, keymap& keys, int maxDupesToCount=-1, bool winnow=true);
-  char* findKgramInDoc(kgramkey key);
+  char* findKgramInDoc(kgramkey key, int bits=0);
   void markupDoc(ostream& out, keyhashset& keys);
   void markupCompleteDoc(MarkedDoc& mud, keyhashset& keys);
   

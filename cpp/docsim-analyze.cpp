@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   VERY_VERBOSE=0;
   //
   // Read options using standard code for all of docsim programs
-  readOptions(argc, argv, "d:o:f:b:cr:ST:x:X:", myname, "<filename1> is file containing a list of filenames of normalized txt files to read (relative to the data directory (-d)). Will write a keymap by default but a KeyTable if the -b option is specified to give the number of bits. If -T keyTableBase is given then this KeyTable will be read in before adding more documents. ");
+  readOptions(argc, argv, "d:o:f:b:cr:ST:wx:X:", myname, "<filename1> is file containing a list of filenames of normalized txt files to read (relative to the data directory (-d)). Will write a keymap by default but a KeyTable if the -b option is specified to give the number of bits. If -T keyTableBase is given then this KeyTable will be read in before adding more documents. ");
 
   // Read list of psv files to work with
   cout << myname << ": about to run " << myname << "...\n";
@@ -85,15 +85,20 @@ int main(int argc, char* argv[])
     int nf1=keytable.writeMultiFile(keytableBaseName,true);
     cout << myname << ": Finished writing " << nf1 << " KeyTable to files starting " << keytableBaseName << endl;
 
-    // Drop table1 (keys appearing only once) and write again
-    keytable.dropTable1();
-    cout << myname << ": Dropped table1, KeyTable stats:" << endl;
-    keytable.writeStats(cout);
-  
-    string keytableBaseName2=prependPath(baseDir,"sharedkeys"+rangeId);
-    cout << myname << ": Writing KeyTable2 to " << keytableBaseName2 << endl;
-    int nf2=keytable.writeMultiFile(keytableBaseName2,false);
-    cout << myname << ": Finished writing KeyTable2 in " << nf2 << " files to files starting " << keytableBaseName2 << endl;
+    if (writeSharedKeys || compare) {
+      // Drop table1 (keys appearing only once) and write again
+      keytable.dropTable1();
+      cout << myname << ": Dropped table1, KeyTable stats:" << endl;
+      keytable.writeStats(cout);
+    }
+
+    if (writeSharedKeys) {
+      // Write out the shared keys file which is just tables 2 and 3
+      string keytableBaseName2=prependPath(baseDir,"sharedkeys"+rangeId);
+      cout << myname << ": Writing KeyTable2 to " << keytableBaseName2 << endl;
+      int nf2=keytable.writeMultiFile(keytableBaseName2,false);
+      cout << myname << ": Finished writing KeyTable2 in " << nf2 << " files to files starting " << keytableBaseName2 << endl;
+    }
     
     if (compare) {
       intv oids;

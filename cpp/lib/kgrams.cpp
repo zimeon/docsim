@@ -3,7 +3,7 @@
 // Based on code written by and copyright Daria Sorokina, 2005.
 // Modified and extended by Simeon Warner, 2005-07...
 //
-// $Id: kgrams.cpp,v 1.4 2011-03-03 14:20:24 simeon Exp $
+// $Id: kgrams.cpp,v 1.6 2011-03-10 01:18:49 simeon Exp $
 //
 #include "definitions.h"
 #include "options.h"
@@ -62,14 +62,24 @@ string kgramkeyToString(U64 hash)
 // Opposite of kgramkeyToString, extracts kgramkey from input
 // string
 //
-kgramkey stringToKgramkey(char* keystr)
+// If the number of chars is not specified (0) then we assume 
+// a complete kgramkey and require KGRAMKEYDIGITS hex digits.
+// Use this parameter to specify a smaller key.
+// 
+kgramkey stringToKgramkey(char* keystr, int chars)
 {
-  if (strlen(keystr)!=16) {
-    cerr << "stringToKgramkey: bad kgramkey length, " << strlen(keystr) << " not 16 chars" << endl;
+  if (chars==0) {
+    chars=KGRAMKEYDIGITS;
+  } else if (chars<8) {
+    // Currently use a minimum of 8 hex chars for small keys
+    chars=8;
+  }
+  if ((int)strlen(keystr)!=chars) {
+    cerr << "stringToKgramkey: bad kgramkey length, " << strlen(keystr) << ", expected " << chars << " chars" << endl;
     exit(1);
   }
   kgramkey key=0;
-  for (int j=0; j<16; j++) {
+  for (int j=0; j<chars; j++) {
     int d;
     if (keystr[j]>='0' and keystr[j]<='9') {
       d=int(keystr[j]-'0');
@@ -241,6 +251,40 @@ char* findKgram(kgramkey& key, char* sentence)
   // now search through all the kgrams
   for(int word=0; word<=numWords-WINK; word++) {
     if (fingerprint(&sentence[spaces[word]+1],&sentence[spaces[word+WINK]-1])==key) {
+      char* match;
+      match=new char[spaces[word+WINK]-spaces[word]+1];
+      int j;
+      for (j=0; j<=(spaces[word+WINK]-spaces[word]-2); j++) {
+        match[j]=sentence[spaces[word]+j+1];
+      }
+      match[j]='\0';
+      return(match);
+    }
+  }
+  
+  return((char*)NULL); // no match
+}
+
+
+// Find the words that match a given kgramkey where matching if
+// checked after applying the bitmask mask to each kgramkey in the
+// sentence.
+//
+// Returns 
+//   (char*)NULL              if no match
+//   (char*)"matching words"  if match
+//
+char* findKgramWithMask(kgramkey& key, kgramkey mask , char* sentence)
+{
+  intv spaces;       //places of word boundaries in the sentence
+  int numWords=findSpaces(spaces,sentence);
+  //cout << "numWords=" << numWords << ": " << sentence << "\n";
+
+  if (numWords<MINSENL) return((char*)NULL); // sentence too small, no match
+
+  // now search through all the kgrams
+  for(int word=0; word<=numWords-WINK; word++) {
+    if ((fingerprint(&sentence[spaces[word]+1],&sentence[spaces[word+WINK]-1])&mask)==key) {
       char* match;
       match=new char[spaces[word+WINK]-spaces[word]+1];
       int j;
