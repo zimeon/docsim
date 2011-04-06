@@ -4,7 +4,7 @@
 #
 # Edit this to the location of your gsoap installation:
 
-GSOAP_PREFIX=/opt/gsoap-2.7.12
+GSOAP_PREFIX=/opt/gsoap-2.7
 GSOAP_SRC=gsoap
 
 ################## Makefile should not need configuration below this line ########################
