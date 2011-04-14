@@ -15,13 +15,16 @@ FIXME - Has some arXiv specific code to do with ids
 
 =cut
 
-use Moose;
+use base qw(Class::Accessor);
+__PACKAGE__->mk_accessors(qw(query_id query_file matches overlap_url));
 
 =head1 METHODS
 
 =head3 new()
 
-Uses L<Moose> to provide new() and to provide accessors for instance 
+Create object and initialize variable for empty result set.
+
+Uses base class L<Class::Accessor> to provide to provide accessors for instance 
 variables which are:
 
   query_id
@@ -31,25 +34,15 @@ variables which are:
 
 =cut
 
-has 'query_id' =>
-  ( 'is' => 'rw',
-    'isa' => 'Str',
-    'default' => 'NONE' );
-
-has 'query_file' =>
-  ( 'is' => 'rw',
-    'isa' => 'Str',
-    'default' => 'NONE' );
-
-has 'matches' => 
-  ( 'is' => 'rw',
-    'isa' => 'HashRef',
-    'default' => sub { {} } );
-
-has 'overlap_url' =>
-  ( 'is' => 'rw',
-    'isa' => 'Str',
-    'default' => 'http://export.arxiv.org/overlap' );
+sub new {
+  my $class = shift;
+  my $self = { query_id => undef,
+               query_file => undef,
+               matches => {},
+               overlap_url => 'http://example.org/overlap',
+               @_ };
+  bless $self, $class;
+}
 
 
 =head3 $results->sort_by_score()
@@ -66,38 +59,7 @@ sub sort_by_score {
 }
 
 
-=head1 check_overlap($file1,$file2)
-
-Check overlap of two files, $file1 and $file2, using docsim-overlap.
-
-=cut
-
-sub check_overlap {
-  my ($file1,$file2)=@_;
-
-  my $out=`./docsim-overlap -f $file1 -F $file2 -s`;
-  #print $out;
-  my ($words1,$match1,$long1,$words2,$match2,$long2)=$out=~/#STATS#:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/;
-  my $match=($match1+$match2);
-  return($match,$words1,$match1,$long1,$words2,$match2,$long2);
-}
-
-
-
-=head3 matching_files($matches)
-
-Return sorted list of the keys of %$matches, sorted by $matches->{key}{score}
-order.
-
-=cut
-
-sub matching_files {
-  my ($matches)=@_;
-  return(sort {$matches->{$b}{score}<=>$matches->{$a}{score}} keys %$matches);
-}
-
-
-=head3 as_html($query_id,$query_file,$matches)
+=head3 $results->as_html($query_id,$query_file,$matches)
 
 Return a string that is the body of a results page for a query of 
 $query_id,$query_file which returned $matches.
@@ -135,7 +97,7 @@ sub as_html {
 }
 
 
-=head3 as_txt()
+=head3 $results->as_txt
 
 Return summary as plain text string.
 
@@ -158,7 +120,7 @@ sub as_txt {
 }
 
 
-=head3 num()
+=head3 $results->num
 
 Return number of matches in result set.
 
