@@ -21,14 +21,10 @@ DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../li
 
 # Compiler settings
 #
-# gcc 4.3 complains about use of deprecated hash_set and hash_map, suggesting instead 
-# use of unordered_set and unordered_map. However, to use these one must enable
-# "compiler and library support for the upcoming ISO C++ standard, C++0x. This support 
-# is currently experimental". Thus, for now, add -Wno-depreacted to avoid warnings.
 CPP=g++
 LIBS=
 COFLAGS=-O
-CWFLAGS=-Wno-deprecated
+CWFLAGS=-Wall
 CIFLAGS=-I../..
 CMFLAGS=
 CFLAGS= $(CWFLAGS) $(COFLAGS) $(CIFLAGS) $(CMFLAGS)

@@ -1,6 +1,10 @@
 // docsim-conact.cpp
+//
+// Read and concatenate (combine) data from a set of KeyTable
+// files.
+//
 // Simeon Warner - 2009-11-21...
-// 
+
 #include "definitions.h"
 #include "options.h"
 #include "Logger.h"
@@ -21,7 +25,7 @@ int main(int argc, char* argv[])
   VERY_VERBOSE=0;
   //
   // Read options using standard code for all of docsim programs
-  int next_arg=readOptions(argc, argv, "d:o:f:b:cr:T:x:X:", myname, "<filename1> is file containing a list of filenames of normalized txt files to read (relative to the data directory (-d)). Will write a keymap by default but a KeyTable if the -b option is specified to give the number of bits. If -T keyTableBase is given then this KeyTable will be read in before adding more documents. ");
+  int next_arg=readOptions(argc, argv, "d:o:f:b:cr:T:x:X:", myname, "<filename1> is file containing a list of filenames of normalized txt files to read (relative to the data directory (-d)). The number of bits in the KeyTable must be specified with the -b option. If -T keyTableBase is given then this KeyTable will be read in before adding more documents. ");
 
   // Read list of psv files to work with
   cout << myname << ": about to run " << myname << "...\n";

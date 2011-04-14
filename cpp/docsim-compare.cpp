@@ -1,9 +1,10 @@
 // docsim-compare.cpp
-// Compare a new document with data in an existing map
+//
+// Compare a new document with data in an existing set of extracted keys
+// to report potential overlaps.
+//
 // Simeon Warner - 2005-08-10...
-//
-// $Id: docsim-compare.cpp,v 1.2 2011-02-16 23:19:33 simeon Exp $
-//
+
 #include "definitions.h"
 #include "options.h"
 #include "Logger.h"
@@ -23,8 +24,8 @@ int main(int argc, char* argv[])
   // Read options using standard code for all of DocSim programs
   readOptions(argc, argv, (const char*)"d:o:f:m:St:T:b:n:", myname, "Compare a new document with data in an existing map");
  
-  // Load new file and create keymap
-  keymap newkeys;
+  // Load new file and create KeyMap
+  KeyMap newkeys;
   if (filename1=="") {
     cerr << myname << ": No filename specified, use -f <filename1>\n";
     exit(1);
@@ -37,28 +38,28 @@ int main(int argc, char* argv[])
   ndout.open(newdocKeyMapFile.c_str(),ios_base::out);
   ndout << newkeys;
   ndout.close();
-  cout << myname << ": read new doc with " << newkeys.size() << " keys, keymap dumped to " << newdocKeyMapFile << endl;
+  cout << myname << ": read new doc with " << newkeys.size() << " keys, KeyMap dumped to " << newdocKeyMapFile << endl;
   
-  // Now, somehow get a keymap of the overlap. What we load depends on the command
+  // Now, somehow get a KeyMap of the overlap. What we load depends on the command
   // line options...
   //
   // At the end of this if block we will have shared keys between new doc and
   // corpus in sharedkeys
-  keymap sharedkeys;
+  KeyMap sharedkeys;
   //
   if (keyMapFile!="") {
-    // Load existsing keymap
-    keymap allkeys;
+    // Load existsing KeyMap
+    KeyMap allkeys;
     string fullKeyMapFile=prependPath(baseDir,keyMapFile);
     ifstream kin;
     kin.open(fullKeyMapFile.c_str(),ios_base::in);
     if (!kin.good()) {
-      cerr << myname << ": Error - failed to open '" << fullKeyMapFile << "' to read keymap, aborting!" << endl;
+      cerr << myname << ": Error - failed to open '" << fullKeyMapFile << "' to read KeyMap, aborting!" << endl;
       exit(2);
     }
     kin >> allkeys;
     kin.close();
-    cout << myname << ": read keymap with " << allkeys.size() << " keys." << endl;
+    cout << myname << ": read KeyMap with " << allkeys.size() << " keys." << endl;
     if (allkeys.size()==0) {
       cerr << myname << ": no keys read, aborting" << endl;
       exit(1);
@@ -100,10 +101,10 @@ int main(int argc, char* argv[])
   sout.open(sharedkeysFile.c_str(),ios_base::out);
   sout << sharedkeys;
   sout.close();
-  cout << myname << ": written shared keys keymap to " << sharedkeysFile << endl;
+  cout << myname << ": written shared keys KeyMap to " << sharedkeysFile << endl;
 
   DocPairVector dpv;
-  getCommonDocs(sharedkeys, dpv, keysForMatch);
+  sharedkeys.getCommonDocs(dpv, keysForMatch);
   string candidateFile=prependPath(baseDir,"candidates.dpv");
   cout << myname << ": Writing " << dpv.size() << " overlapping (>=" << keysForMatch << " keys) docs to " << candidateFile << endl;
   ofstream cdout;

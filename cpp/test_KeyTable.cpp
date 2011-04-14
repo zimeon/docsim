@@ -104,8 +104,8 @@ int main(int argc, char* argv[])
   //
   KeyTable dummyKT(20,false);
 
-  keymap km;
-  cout << "Reading KeyTable as keymap single file from " << outFile1 << endl;
+  KeyMap km;
+  cout << "Reading KeyTable as KeyMap single file from " << outFile1 << endl;
   ifstream ktin2;
   ktin2.open(outFile1.c_str(),ios_base::in);
   if (!ktin2) {
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
   } 
   dummyKT.readTables123(ktin2, (intv*)NULL, &km);
   ktin2.close();
-  cout << "Got keymap from " << outFile1 << endl << km;
+  cout << "Got KeyMap from " << outFile1 << endl << km;
 
   km.clear();
   intv indexes;
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
   indexes.push_back(6);
   indexes.push_back(7);
   indexes.push_back(8);
-  cout << "Reading KeyTable as keymap single file from " << outFile1 << " with filter (5,6,7,8)" << endl;
+  cout << "Reading KeyTable as KeyMap single file from " << outFile1 << " with filter (5,6,7,8)" << endl;
   ifstream ktin3;
   ktin3.open(outFile1.c_str(),ios_base::in);
   if (!ktin3) {
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
   } 
   dummyKT.readTables123(ktin3, &indexes, &km);
   ktin3.close();
-  cout << "Got keymap from " << outFile1 << " with filter (5,6,7,8)" << endl << km;
+  cout << "Got KeyMap from " << outFile1 << " with filter (5,6,7,8)" << endl << km;
 
   cout << "Done." << endl;
 }

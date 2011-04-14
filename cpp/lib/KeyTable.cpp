@@ -28,8 +28,6 @@
 // (It also imposes a limit on the maximum document id of 2^31-1 (2,147,483,647)
 // but the whole system will break down long before then. Current code has
 // a limit of 1,000,000 built in with strict checks)
-//
-// $Id: KeyTable.cpp,v 1.10 2011-04-02 16:26:03 simeon Exp $
 
 #include "definitions.h"
 #include "options.h"
@@ -135,8 +133,12 @@ KeyTable::KeyTable(int bits, bool dummy, int selectBits, int selectBitsMatch)
 }
 
 
+// Just clean up memory
+//
 KeyTable::~KeyTable(void)
 {
+  delete table1;
+  delete table2;
 }
 
 
@@ -184,7 +186,7 @@ void KeyTable::growTable2(void)
     table2[j*2+1]=0;
   }
   // Finally, delete old table and return
-  delete old_table2;
+  delete[] old_table2;
 }
 
 // Allow code to drop table1 so that we can save space for code the
@@ -192,7 +194,7 @@ void KeyTable::growTable2(void)
 //
 void KeyTable::dropTable1(void)
 {
-  delete(table1);
+  delete[] table1;
   TABLE1_SIZE=0;
 }
 
@@ -397,6 +399,7 @@ void KeyTable::getOverlapIds(intv& docids, int n)
    
   cout << "KeyTable::getOverlapIds: looked at " << maxDocid << " ids and returned " 
        << docids.size() << " ids which have at least " << n << " overlaps" << endl;
+  delete did;
 } 
 
 
@@ -456,6 +459,7 @@ void KeyTable::getOverlapDocs(DocPairVector& docpairs, intv& docids, int n)
     if (j%100==0) cout << "KeyTable::getOverlapDocs[" << j << "] Got " << docpairs.size() << " pairs so far" << endl;
   }
   cout << "Found " << docpairs.size() << " document pairs sharing >= " << n << " keys" << endl;
+  delete overlap;
 }
 
 
@@ -477,8 +481,25 @@ void KeyTable::getOverlapKeys(intv& indexes, keymap& kmd)
     docids.clear();
     getDocids(docids,indexes[j]);
     if (docids.size()>0) {
-      // There is overlap and we have a list of docids
+      // There is overlap and we have a list of docids to insert
       KgramInfo* kip=new KgramInfo(docids);
+#ifdef STRICT_CHECKS
+      // There should not be any occasion where there is already a value
+      // in the KeyMap with the same key (index). If this occurs then
+      // the kmd.insert(..) below will do nothing and will leave the newly
+      // create KgramInfo object kip as a memory leak. In this test we 
+      // check to see whether there is an existing value and replace doing 
+      // cleanup if there is.
+      // FIXME -- why do we get any repeats??? 
+      keymap::iterator kmdi=kmd.find((kgramkey)indexes[j]);
+      if (kmdi!=kmd.end()) {
+        cerr << "KeyTable: Doing replace of replace of index " << indexes[j] << endl;
+        KgramInfo* old_kip=kmdi->second;
+        cerr << "KeyTable: < " << *old_kip << endl << "KeyTable: > " << *kip << endl;
+        delete kmdi->second; // else this is memory leak
+        kmd.erase(kmdi);
+      }
+#endif
       kmd.insert(keymap::value_type((kgramkey)indexes[j],kip));
     }
   }
@@ -856,7 +877,7 @@ int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
   }
   int numKeys=0;
   int line=0;
-  char buf[18];
+  char* buf = new char[18];
   int key;
   intv docids;
   while (in && !in.eof()) {
@@ -913,8 +934,9 @@ int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
     if (in && (ch=in.get())) { in.putback(ch); } // read ahead to set in false if next to end    
   }
   //
-  // Delete large array we created for lookup
-  delete filterLookup;
+  // Delete large array we created for lookup, and buffer
+  delete[] filterLookup;
+  delete[] buf;
   // Reset control for how table3 elements are added
   numDocidsInRead=-1;
   //

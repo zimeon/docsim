@@ -8,13 +8,9 @@ LIBSLACK=/usr/local/lib/libslack.a
 
 STDLIBS=-lstdc++
 
-# gcc 4.3 complains about use of deprecated hash_set and hash_map, suggesting instead 
-# use of unordered_set and unordered_map. However, to use these one must enable
-# "compiler and library support for the upcoming ISO C++ standard, C++0x. This support 
-# is currently experimental". Thus, for now, add -Wno-depreacted to avoid warnings.
 CPP = gcc
-CPPDEFS = -D__LINUX__
-CPPFLAGS = -O -g -Wno-deprecated -I . -I lib
+CPPDEFS =
+CPPFLAGS = -O -Wall -I . -I lib
 
 .cpp.o:
 	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<

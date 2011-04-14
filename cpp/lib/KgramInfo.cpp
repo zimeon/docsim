@@ -1,6 +1,5 @@
 // Information about a kgram (use, list of docids...)
 // Simeon Warner - 2005-07...
-// $Id: KgramInfo.cpp,v 1.2 2007-06-01 18:26:59 simeon Exp $
 
 #include "definitions.h"
 #include "KgramInfo.h"
@@ -53,6 +52,14 @@ KgramInfo::KgramInfo(KgramInfo* ki)
 }
 
 
+// Destructor: Free memory in ids array
+//
+KgramInfo::~KgramInfo(void)
+{
+  delete[] ids;
+}
+
+
 // Don't ever plan to use this so make it exit with a warning just in case
 // I write code that accidentally creates extra copies of these objects.
 //
@@ -62,11 +69,6 @@ KgramInfo& KgramInfo::operator=(const KgramInfo& ki)
   exit(2);
 }
 
-
-KgramInfo::~KgramInfo(void)
-{
-  delete ids;
-}
 
 // Here we recklessly use the fact that we add documents in order of docid
 // We can thus check the last entry to see if the docid is the same
@@ -123,7 +125,7 @@ void KgramInfo::growIds(void)
     ids[j]=oldids[j];
   }
     
-  delete oldids;  
+  delete[] oldids;  
 }
 
 
@@ -132,7 +134,7 @@ void KgramInfo::growIds(void)
 // Utility functions
 
 // Format of KgramInfo object is
-//   [#occurrances,#docs] #docid1 #docid2..
+//   [#occurrences,#docs] #docid1 #docid2..
 //
 ostream& operator<<(ostream& out, KgramInfo& ki)
 {
@@ -154,12 +156,12 @@ istream& operator>>(istream& in, KgramInfo& ki)
   while (in && ((ch=in.get())!='[')) { /* Skip anything to [ */ }
   in >> ki.occurrences;
   if ((ch=in.get())!=',') { // next thing must be comma
-    cerr << "operator>> for KgramInf, expected comma, got character " << ch << ", bad input" << endl;
+    cerr << "operator>> for KgramInfo, expected comma, got character " << ch << ", bad input" << endl;
     in.clear(ios::badbit|in.rdstate()); // set stream bad
   }
   in >> ki.numIds;
   if ((ch=in.get())!=']') { // next thing must be closing square bracket
-    cerr << "operator>> for KgramInf, expected ], got character " << ch << ", bad input" << endl;
+    cerr << "operator>> for KgramInfo, expected ], got character " << ch << ", bad input" << endl;
     in.clear(ios::badbit|in.rdstate()); // set stream bad
   }
   // now expect numIds space separated numbers
@@ -172,7 +174,7 @@ istream& operator>>(istream& in, KgramInfo& ki)
   while (in && ((ch=in.get())!='\n')) { 
     // Skip spaces to end of line
     if (ch!=' ') {
-      cerr << "operator>> for KgramInf, permit trailing space, got char " << ch << ", bad input" << endl;
+      cerr << "operator>> for KgramInfo, permit trailing space, got char " << ch << ", bad input" << endl;
       in.clear(ios::badbit|in.rdstate()); // set stream bad
     }
   }

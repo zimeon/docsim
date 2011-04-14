@@ -1,7 +1,11 @@
 // docsim-analyze.cpp
+//
+// Analyze a set of documents and write information about
+// keys extracted as either KeyTable or KeyMap.
+//
 // Based in part on Similarity.cpp from Daria Sorokina
 // Simeon Warner - 2005-07...
-// 
+
 #include "definitions.h"
 #include "options.h"
 #include "Logger.h"
@@ -22,7 +26,7 @@ int main(int argc, char* argv[])
   VERY_VERBOSE=0;
   //
   // Read options using standard code for all of docsim programs
-  readOptions(argc, argv, "d:o:f:b:cr:ST:wx:X:", myname, "<filename1> is file containing a list of filenames of normalized txt files to read (relative to the data directory (-d)). Will write a keymap by default but a KeyTable if the -b option is specified to give the number of bits. If -T keyTableBase is given then this KeyTable will be read in before adding more documents. ");
+  readOptions(argc, argv, "d:o:f:b:cr:ST:wx:X:", myname, "<filename1> is file containing a list of filenames of normalized txt files to read (relative to the data directory (-d)). Will write a KeyMap by default but a KeyTable if the -b option is specified to give the number of bits. If -T keyTableBase is given then this KeyTable will be read in before adding more documents. ");
 
   // Read list of psv files to work with
   cout << myname << ": about to run " << myname << "...\n";
@@ -114,12 +118,12 @@ int main(int argc, char* argv[])
       cdout.close();
     }
 
-  } else { // use keymap
-    keymap allkeys;
+  } else { // use KeyMap
+    KeyMap allkeys;
     docs.getKeymap(allkeys, MAX_DUPES_TO_COUNT, true, cStart, cEnd);
-    cout << myname << ": built keymap, " << allkeys.size() << " keys\n";
+    cout << myname << ": built KeyMap, " << allkeys.size() << " keys\n";
 
-    keymap commonkeys;
+    KeyMap commonkeys;
     docs.stripCommon(allkeys, commonkeys, NUM_DUPES_TO_BE_COMMON);
     cout << myname << ": stripped common, left " << allkeys.size() << " keys\n";
     cout << myname << ": got " << commonkeys.size() << " common keys\n";

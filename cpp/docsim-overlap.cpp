@@ -1,7 +1,9 @@
-// Find kgrams in a normalized text file and write the marked up version
+// docsim-overlap
 //
-// $Id: docsim-overlap.cpp,v 1.3 2011-03-03 14:20:24 simeon Exp $
+// Find kgrams in a normalized text file and write a marked up version
 //
+// Simeon Warner - 2005...
+
 #include "definitions.h"
 #include "options.h"
 #include "Logger.h"
@@ -12,12 +14,6 @@
 #include <string.h> // for strncpy()
 #include <unistd.h> // assume GNU getopt
 #include <fstream>
-
-#ifdef __LINUX__
-//#include "linux.h"
-#else
-//#include <windows.h>
-#endif
 
 const string myname="docsim-overlap";
 const string mydesc="Write HTML snippets from the direct comparison of two normalized text files. Typical use:\n"
@@ -36,12 +32,12 @@ int main(int argc, char* argv[])
     docid id1=docs.addFile(filename1);
     docid id2=docs.addFile(filename2);
     
-    keymap allkeys;
+    KeyMap allkeys;
     cout << myname << ": Not using winnowing" << endl;
     docs.getKeymap(allkeys, MAX_DUPES_TO_COUNT, false);
-    cout << myname << ": built keymap, " << allkeys.size() << " keys\n";
+    cout << myname << ": built KeyMap, " << allkeys.size() << " keys\n";
     
-    keymap sharedkeys;
+    KeyMap sharedkeys;
     docs.stripCommon(allkeys, sharedkeys, 2);
     cout << myname << ": extracted " << sharedkeys.size() << " shared keys\n";
     
@@ -59,9 +55,9 @@ int main(int argc, char* argv[])
       skout.close();
     }
  
-    // Extract simple keyhashset of shared keys from the keymap
+    // Extract simple keyhashset of shared keys from the KeyMap
     keyhashset shared;
-    for (keymap::iterator kit = sharedkeys.begin(); kit != sharedkeys.end(); kit++) {
+    for (KeyMap::iterator kit = sharedkeys.begin(); kit != sharedkeys.end(); kit++) {
        shared.insert(kit->first);
     }
     if (!comparisonStatsOnly) {

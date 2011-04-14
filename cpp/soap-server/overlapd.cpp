@@ -21,12 +21,11 @@
 // 2007-02-07 - use gSOAP 2.7.9 for SOAP interface [Simeon]
 // 2011-03-02 - tidied, uses logfile, implemented reload on USR1 [Simeon]
 //
-// $Id: overlapd.cpp,v 1.12 2011-03-10 05:02:18 simeon Exp $
-//
 #include "options.h"
 #include "DocInfo.h"
 #include "kgrams.h"
 #include "files.h"
+#include "pstats.h"
 
 #include <unistd.h> // assume GNU getopt
 #include <fstream>
@@ -39,15 +38,19 @@
 #include "soapH.h"
 #include "overlap.nsmap"
 
+// Logfile for normal output
 #define MY_LOG_FILE "/tmp/overlapd.log"
+// SOAP server will connect to this port on localhost
 #define SOAP_PORT 8081
+// If SHOW_PROCESS_STATS!=0 then show process stats in log every SHOW_PROCESS_STATS requests
+#define SHOW_PROCESS_STATS 100
 
 // See fudge in overlap__overlap for return string docs, note that
 // this imposed a limit on the return size of about 10k documents
 #define DOCS_MAX_CHARS 100000
 char docs_buf[DOCS_MAX_CHARS+1];
 
-// Define default file names that may be overriden by command line args
+// Name of this program show in logs
 const string myname="overlapd";
 
 // Globals defined in definitions.h and in options.h
@@ -56,7 +59,9 @@ ofstream logstream;
 
 void loadKeyTable(KeyTable& kt);
 
-// Handle signals
+
+//=====================================================================
+// Signal handlers
 
 void sigusr1_handler(int signo)
 {
@@ -81,8 +86,10 @@ void sigterm_handler(int signo)
 }
 
 
-// Make in situ modification of \0 terminated char* data str to replace
-// all control chars with underscore for debugging output.
+//=====================================================================
+// Utility function that makes in-situ modification of \0 terminated 
+// char* data str to replace all control chars with underscore for 
+// debugging output.
 //
 void strclean(char* str)
 {
@@ -154,35 +161,41 @@ int main(int argc, char* argv[])
     logstream << myname << "Failed to set USR1 and TERM handlers" << endl; 
     exit(1);
   }
-  //    run_soap_server(myname.c_str())!=0) {
-  //  cerr << myname << ": failed run_soap_server(..), errno=" << errno << endl;
-  //  exit(1);
-  //}
 
   struct soap soap;
   soap_init(&soap);
 
   if (1) {
-    int m, s; /* master and slave sockets */
+    int m, s; // master and slave sockets
     m = soap_bind(&soap, NULL, SOAP_PORT, 100);
     if (m < 0) { 
       soap_print_fault(&soap, stderr);
       exit(-1);
     }
     logstream << myname << ": Socket connection successful: master socket = " << m << endl;
-    int count;
-    for (count=1; ; count++ ) { 
+
+    // Main loop to wait for and answer SOAP requests
+    for (int count=1; ; count++ ) { 
       s = soap_accept(&soap);
-      logstream << myname << ": Socket connection successful: slave socket = " << s 
-          << ", count = " << count << endl;
       if (s < 0) {
         soap_print_fault(&soap, stderr);
-        exit(-1);
+        exit(-2);
       } 
-      soap_serve(&soap);
+      logstream << myname << ": Socket connection successful: slave socket = " << s 
+                << ", count = " << count << endl;
+      if (soap_serve(&soap) != SOAP_OK) { 
+        soap_print_fault(&soap, stderr);
+        exit(-3);
+      }
+      soap_destroy(&soap);
       soap_end(&soap);
+      // Show some monitoring stats every SHOW_PROCESS_STATS requests
+      if (SHOW_PROCESS_STATS>0 && (count%SHOW_PROCESS_STATS == 0)) {
+        logstream << myname << ": [" << count << "] " << get_pstats_string() << endl;
+      }
     }
   }
+  soap_done(&soap);
   return 0;
 } 
 
@@ -209,18 +222,19 @@ int overlap__overlap(struct soap *soap, char *nat, struct overlap__overlapRespon
   // "read" document from buffer
   istringstream is(nat);
   DocInfo doc("string",9999999);
-  keymap km;
+
+  KeyMap km;
   doc.addToKeymap(is,km);
   logstream << myname << ": Extracted " << km.size() << " keys from input doc" << endl;
 
   // now find overlap of keys in km with corpus in KeyTable kt
-  keymap sharedkeys;
+  KeyMap sharedkeys;
   global_kt->getOverlapKeys(km,sharedkeys);
   logstream << myname << ": Got " << sharedkeys.size() << " overlapping keys" << endl;
 
   // now find overlapping docs
   DocPairVector dpv;
-  getCommonDocs(sharedkeys, dpv, keysForMatch);      
+  sharedkeys.getCommonDocs(dpv, keysForMatch);      
   logstream << myname << ": Found " << dpv.size() << " docs overlapping by >= " << keysForMatch << " keys" << endl;
 
   // set number of matches in response <matches>

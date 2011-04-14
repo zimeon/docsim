@@ -20,8 +20,8 @@ public:
   KgramInfo(docid id);
   KgramInfo(intv& idv);
   KgramInfo(KgramInfo* ki);
-  KgramInfo& operator=(const KgramInfo& ki);
   ~KgramInfo(void);
+  KgramInfo& operator=(const KgramInfo& ki);
   void addOccurrence(docid id, int maxDupesToCount=-1);
   int size(void);
   void growIds(void);

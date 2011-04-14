@@ -2,6 +2,7 @@
 //
 // Based on code written by and copyright Daria Sorokina, 2005.
 // Simeon Warner - 2005-07..
+// 2011-03 - Changed from deprecated hash_set to unordered_set etc.
 //
 // $Id: definitions.h,v 1.4 2011-02-16 23:18:37 simeon Exp $
 
@@ -11,18 +12,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <ext/hash_set>
-#include <ext/hash_map>
+#include <tr1/unordered_set>
+#include <tr1/unordered_map>
 #include <limits.h>
 
 using namespace std;
-using __gnu_cxx::hash_set;
-using __gnu_cxx::hash_map;
-using __gnu_cxx::hash_multimap;
-#ifdef __LINUX__
-  // gcc stl libraries do not support unsigned long long hash functions
-  #include "hash_ull.h"
-#endif
 
 // Should put in checks to see that these really are the sizes we think
 // they are. How to do this at compile time?
@@ -46,8 +40,8 @@ typedef U32 docid;      // Type for document ids
 
 typedef vector<kgramkey> kgramkeyv;
 
-typedef hash_set<kgramkey> keyhashset;
-typedef hash_set<docid> docidhashset;
+typedef std::tr1::unordered_set<kgramkey> keyhashset;
+typedef std::tr1::unordered_set<docid> docidhashset;
 
 // Utility types based on standard types
 typedef vector<int> intv;

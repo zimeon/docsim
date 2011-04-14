@@ -1,7 +1,6 @@
 // A lookup table of short keys to document ids. Optimized for the case where 
 // most keys point to zero or one document id. 
 // Simeon Warner - 2005-08-03...
-// $Id: KeyTable.h,v 1.4 2011-02-09 21:07:14 simeon Exp $
 
 #ifndef __INC_KeyTable
 #define __INC_KeyTable 1
