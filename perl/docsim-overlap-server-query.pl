@@ -41,7 +41,8 @@ output something like:
 
 use strict;
 
-use lib qw(lib);
+use FindBin;
+use lib "$FindBin::Bin/lib";
 
 use Text::Docsim::Client;
 use Text::Docsim::FileList;
