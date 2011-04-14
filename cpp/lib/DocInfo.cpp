@@ -69,7 +69,7 @@ void DocInfo::addToKeymap(istream& in, keymap& keys, int maxDupesToCount, bool w
           // create new entry with just current docid
           keys.insert(keymap::value_type(*k,new KgramInfo(id)));
         } else {
-          // get pointer to docishashset and add extra element if size()<maxDupesToCount
+          // get pointer to docidhashset and add extra element if size()<maxDupesToCount
           kit->second->addOccurrence(id,maxDupesToCount);
         }
 #endif
