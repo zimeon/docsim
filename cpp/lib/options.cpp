@@ -11,6 +11,7 @@
 //
 #include "definitions.h"
 #include "options.h"
+#include <stdlib.h>
 #include <unistd.h> // assume GNU getopt
 #include <string.h> // for strncpy()
 #include <sstream>
