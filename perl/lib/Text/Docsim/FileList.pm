@@ -49,8 +49,9 @@ sub new {
 
 =head3 load_list()
 
-The file is simply a list of numbers and file names. We read them and number them
-from 1 up, the number on each line should match the count of lines so far.
+The file is simply a list of numbers (optional) and file names. We
+read them and number them from 1 up, the number on each line should
+match the count of lines so far.
 
 =cut
 
@@ -64,12 +65,22 @@ sub load_list {
   }
   if (open(my $fh, '<', $self->{file})) {
     my $n=0;
-    while (<$fh>) {
+    while (my $line=<$fh>) {
       $n++;
-      chomp();
-      my ($num,$file)=split(/\s/,$_);
-      if ($num!=$n) {
-        die "Error in file list, got number $num when expecting $n on line $n in '".$self->{file}."\n";
+      chomp($line);
+      my $file;
+      if ($line!~/\s/) {
+        # Just a file name
+        $file=$line;
+      } elsif ($line=~/\d\s+\S/) {
+        # Must have numbers and file names
+        my $num;
+        ($num,$file)=split(/\s/,$_);
+        if ($num!=$n) {
+          die "Error in file list, got number $num when expecting $n on line $n in '".$self->{file}."\n";
+        }
+      } else {
+        die "Error in file list (bad line $n): $line\n"; 
       }
       $self->{files}[$n]="$base$file";
     }
