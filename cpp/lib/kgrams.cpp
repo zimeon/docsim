@@ -111,7 +111,7 @@ void growAllkeys() {
   int newMax=MAX_KEYS*2;
   kgramkey* newAllkeys=new kgramkey[newMax];
   for (int j=0; j<MAX_KEYS; j++) newAllkeys[j]=allkeys[j];
-  delete allkeys;
+  delete[] allkeys;
   if (VERBOSE) {
     cerr << "kgrams::getKgrams: Warning - allkeys array grown from " << MAX_KEYS << " to " << newMax << " keys" << endl;
   }
@@ -123,7 +123,7 @@ void growResults() {
   int newMax=MAX_RESULTS*2;
   kgramkey* newResults=new kgramkey[newMax];
   for (int j=0; j<MAX_RESULTS; j++) newResults[j]=results[j];
-  delete results;
+  delete[] results;
   if (VERBOSE) {
     cerr << "kgrams::getKgrams: Warning - results array grown from " << MAX_RESULTS << " to " << newMax << " keys" << endl;
   }
