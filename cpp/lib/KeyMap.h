@@ -14,7 +14,11 @@
 #include "KgramInfo.h"
 #include "DocPair.h"
 
-typedef std::tr1::unordered_map<kgramkey,KgramInfo*> keymap;
+#ifdef __NO_TR1__
+  typedef hash_map<kgramkey,KgramInfo*> keymap;
+#else
+  typedef std::tr1::unordered_map<kgramkey,KgramInfo*> keymap;
+#endif
 
 ostream& operator<<(ostream& out, keymap& keys);
 istream& operator>>(istream& in, keymap& keys);

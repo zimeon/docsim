@@ -12,9 +12,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
 #include <limits.h>
+#ifdef __NO_TR1__
+  #include <ext/hash_set>
+  #include <ext/hash_map>
+#else
+  #include <tr1/unordered_set>
+  #include <tr1/unordered_map>
+#endif
 
 using namespace std;
 
@@ -40,9 +45,20 @@ typedef U32 docid;      // Type for document ids
 
 typedef vector<kgramkey> kgramkeyv;
 
-typedef std::tr1::unordered_set<kgramkey> keyhashset;
-typedef std::tr1::unordered_set<docid> docidhashset;
-typedef std::tr1::unordered_set<int> indexhashset;
+#ifdef __NO_TR1__
+  using __gnu_cxx::hash_set;
+  using __gnu_cxx::hash_map;
+  using __gnu_cxx::hash_multimap;
+  // gcc STL libraries do not support unsigned long long hash functions
+  #include "hash_ull.h"
+  typedef hash_set<kgramkey> keyhashset;
+  typedef hash_set<docid> docidhashset;
+  typedef hash_set<int> indexhashset;
+#else
+  typedef std::tr1::unordered_set<kgramkey> keyhashset;
+  typedef std::tr1::unordered_set<docid> docidhashset;
+  typedef std::tr1::unordered_set<int> indexhashset;
+#endif
 
 // Utility types based on standard types
 typedef vector<int> intv;

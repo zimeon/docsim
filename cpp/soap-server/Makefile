@@ -24,10 +24,11 @@ DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../li
 CPP=g++
 LIBS=
 COFLAGS=-g -O
+CDFLAGS=$(GLOBAL_CPPDEFS)
 CWFLAGS=-Wall
 CIFLAGS=-I../..
 CMFLAGS=
-CFLAGS= $(CWFLAGS) $(COFLAGS) $(CIFLAGS) $(CMFLAGS)
+CFLAGS= $(CWFLAGS) $(COFLAGS) $(CDFLAGS) $(CIFLAGS) $(CMFLAGS)
 
 all:	overlapd
 

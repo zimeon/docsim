@@ -1,7 +1,10 @@
 // Additional version of 'struct hash' for unsigned long long
 // Based on /usr/include/c++/3.2.3/ext/stl_hash_fun.h from gcc3.2.3,
-// original comments retained below.
-// Simeon Warner $Id: hash_ull.h,v 1.1 2007/04/23 23:47:08 simeon Exp $
+// original comments retained below. This is needed only for compiling
+// Docsim libraries using GCC prior to 4.3 which does not support
+// unsigned long long in hash types.
+//
+// Simeon Warner - 2007...2011
 //------------------------------------------------------------------
 
 // 'struct hash' from SGI -*- C++ -*-

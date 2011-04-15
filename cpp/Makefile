@@ -8,7 +8,12 @@ LIBSLACK=/usr/local/lib/libslack.a
 STDLIBS=-lstdc++
 
 CPP = gcc
-CPPDEFS =
+# For gcc < 4.3 must add -D__NO_TR1__ to CPPDEFS, gcc >= 4.3 omit and use std::tr1::unordered_set|map instead of hash_set|map
+# within Docsim	this would usuall come via $(GLOBAL_CPPDEFS)
+CPPDEFS = 
+#CPPDEFS = -D__NO_TR1__
+GLOBAL_CPPDEFS = $(CPPDEFS)
+export GLOBAL_CPPDEFS
 CPPFLAGS = -g -O -Wall -I . -I lib
 
 .cpp.o:
