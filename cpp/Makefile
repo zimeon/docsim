@@ -1,6 +1,5 @@
-# Makefile for DocSim suite
+# Makefile for C++ code in DocSim suite
 # Simeon Warner - 2005-2011
-# $Id: Makefile,v 1.40 2011-04-02 16:26:48 simeon Exp $
 
 DOCSIMLIBS=lib/DocSet.o lib/DocInfo.o lib/Logger.o lib/KgramInfo.o lib/KeyMap.o lib/MarkedDoc.o lib/KeyTable.o lib/KeyTable3Element.o lib/DocPair.o lib/kgrams.o lib/options.o lib/files.o lib/pstats.o
 
@@ -10,7 +9,7 @@ STDLIBS=-lstdc++
 
 CPP = gcc
 CPPDEFS =
-CPPFLAGS = -O -Wall -I . -I lib
+CPPFLAGS = -g -O -Wall -I . -I lib
 
 .cpp.o:
 	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<
