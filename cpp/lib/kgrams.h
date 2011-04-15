@@ -4,8 +4,6 @@
 #define __INC_kgrams 1
 
 #include "definitions.h"
-#include "kgrams.h"
-#include "KgramInfo.h"
 #include <algorithm>
 #include <fstream>
 
