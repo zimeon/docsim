@@ -1,0 +1,42 @@
+Docsim C++ code
+===============
+
+Installing
+----------
+
+The C++ code in directory ccp and under was developed with gcc 4.1.2 and 
+gcc 4.4.5. Support for the evolving STL is different with GCC pre and post-4.3.
+The default is set for GCC >= 4.3 and compilation should be simply a matter
+of:
+
+> cd cpp
+> make
+
+For GCC < 4.3, edit cpp/Makefile to set CPPDEFS = -D__NO_TR1__ which will
+then compile with <hash_set> and <hash_map> instead of the newer
+<tr1/unordered_set> and <tr1/unordered_map>. Under old GCC the head
+lib/hash_ull.h is also required to provide support for unsigned long long
+hashes.
+
+
+Compiled successfully with:
+2011-04-15: gcc4.1.2 x86-64 with -D__NO_TR1__
+2011-04-15: gcc4.4.5
+
+
+gSOAP library
+-------------
+
+The code assumes that gsoap 2.7.x will be installed in /opt/gsoap-2.7. To change 
+this location, edit cpp/soap-server/Makefile.
+
+On Debian and derivative systems (e.g. Ubuntu) this should be
+available for etch and later distributions via apt. Install with, e.g.
+
+sudo apt-get install gsoap
+
+In March 2007 the current version on etch was 2.7.6 which was fine and
+apt installed it in /usr/lib.
+
+For other systems, try sourceforge:
+http://sourceforge.net/projects/gsoap2/
