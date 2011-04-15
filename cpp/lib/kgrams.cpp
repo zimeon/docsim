@@ -26,7 +26,8 @@ inline int charToInt(char c) {
 
 
 // hash-function, from char* to kgramkey (char* must be terminated with \0)
-//// Only latin letters are taken into consideration, the fingerprint can never
+//
+// Only latin letters are taken into consideration, the fingerprint can never
 // be zero.
 //
 kgramkey fingerprint(char* startch, char* endch)
@@ -34,7 +35,7 @@ kgramkey fingerprint(char* startch, char* endch)
 #ifdef STRICT_CHECKS
   if (startch>=endch) {
     cerr << "fingerprint: STRICT_CHECKS: bad params: startch=" 
-         << (unsigned int)startch << " >=  endch=" << (unsigned int)endch << "\n";
+         << (unsigned long int)startch << " >=  endch=" << (unsigned long int)endch << "\n";
   }
 #endif
   kgramkey res = 0;
@@ -218,7 +219,7 @@ kgramkey* findSmallestKgramkey(kgramkey* startkey, kgramkey* endkey, kgramkey* l
 #ifdef STRICT_CHECKS
   if (startkey>endkey) {
     cerr << "fingerprint: STRICT_CHECKS: bad params: startch="
-         << (unsigned int)startch << " >=  endch=" << (unsigned int)endch << "\n";
+         << (unsigned long int)startkey << " >=  endch=" << (unsigned long int)endkey << "\n";
   }
 #endif
   //cout << "looking for smallest in\n   ";
