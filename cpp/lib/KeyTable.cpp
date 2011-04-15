@@ -468,18 +468,18 @@ void KeyTable::getOverlapDocs(DocPairVector& docpairs, intv& docids, int n)
 //
 void KeyTable::getOverlapKeys(keymap& kms, keymap& kmd)
 {
-  intv indexes;
+  indexhashset indexes;
   keysToIndexes(kms,indexes);
   getOverlapKeys(indexes,kmd);
 }
 
 
-void KeyTable::getOverlapKeys(intv& indexes, keymap& kmd)
+void KeyTable::getOverlapKeys(indexhashset& indexes, keymap& kmd)
 {
   intv docids;
-  for (unsigned int j=0; j<indexes.size(); j++) {
+  for (indexhashset::const_iterator iit=indexes.begin(); iit!=indexes.end(); iit++) {
     docids.clear();
-    getDocids(docids,indexes[j]);
+    getDocids(docids,*iit);
     if (docids.size()>0) {
       // There is overlap and we have a list of docids to insert
       KgramInfo* kip=new KgramInfo(docids);
@@ -487,20 +487,20 @@ void KeyTable::getOverlapKeys(intv& indexes, keymap& kmd)
       // There should not be any occasion where there is already a value
       // in the KeyMap with the same key (index). If this occurs then
       // the kmd.insert(..) below will do nothing and will leave the newly
-      // create KgramInfo object kip as a memory leak. In this test we 
-      // check to see whether there is an existing value and replace doing 
-      // cleanup if there is.
-      // FIXME -- why do we get any repeats??? 
-      keymap::iterator kmdi=kmd.find((kgramkey)indexes[j]);
+      // create KgramInfo object kip as a memory leak.
+      keymap::const_iterator kmdi=kmd.find((kgramkey)*iit);
       if (kmdi!=kmd.end()) {
-        cerr << "KeyTable: Doing replace of replace of index " << indexes[j] << endl;
+        cerr << "KeyTable::getOverlapKeys: Doing replace of replace of index " << *iit << endl;
         KgramInfo* old_kip=kmdi->second;
-        cerr << "KeyTable: < " << *old_kip << endl << "KeyTable: > " << *kip << endl;
-        delete kmdi->second; // else this is memory leak
-        kmd.erase(kmdi);
+        cerr << "KeyTable::getOverlapKeys: < " << *old_kip << endl 
+             << "KeyTable::getOverlapKeys: > " << *kip << endl;
+        exit(4);
+        //Comment exit above and uncomment lines below to replace instead of aborting
+        //delete kmdi->second; // remove current data, else this is memory leak
+        //kmd.erase(kmdi);
       }
 #endif
-      kmd.insert(keymap::value_type((kgramkey)indexes[j],kip));
+      kmd.insert(keymap::value_type((kgramkey)*iit,kip));
     }
   }
 }
@@ -590,13 +590,17 @@ void KeyTable::writeStats(ostream& out) {
 
 
 // Extract keys from input keymap and add to list of KeyTable indexes
-// in indexes
+// in indexes. Does this using the MAX_INDEX bitmask to chop off all 
+// but the required number of low bytes.
 //
-void KeyTable::keysToIndexes(keymap& km, intv& indexes)
+// By using an unordered_set (type indexhashset) for indexes we avoid 
+// duplicate entries in indexes.
+//
+void KeyTable::keysToIndexes(keymap& km, indexhashset& indexes)
 {
-  for (keymap::iterator kmit=km.begin(); kmit!=km.end(); kmit++) {
+  for (keymap::const_iterator kmit=km.begin(); kmit!=km.end(); kmit++) {
     int i=(int)((kmit->first)&MAX_INDEX);
-    indexes.push_back(i);
+    indexes.insert(i);
   }
 }
 
@@ -753,11 +757,11 @@ int KeyTable::writeMultiFile(string& baseName, bool allTables, long int maxFileS
 }
 
 
-void KeyTable::writeIndexes(ostream& out, intv& indexes)
+void KeyTable::writeIndexes(ostream& out, indexhashset& indexes)
 {
   char buf[10];
-  for (unsigned int j=0; j<indexes.size(); j++) {
-    sprintf(buf,KEY_FMT,indexes[j]);
+  for (indexhashset::const_iterator iit=indexes.begin(); iit!=indexes.end(); iit++) {
+    sprintf(buf,KEY_FMT,*iit);
     out << buf << endl;
   }
 }
@@ -846,7 +850,7 @@ int KeyTable::stringToIndex(char* keystr)
 //
 // Returns the number of keys added to the KeyTable/keymap
 //
-int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
+int KeyTable::readTables123(istream& in, indexhashset* filterKeys, keymap* km)
 {
   // Sanity check
   if (!in || in.eof()) {
@@ -854,27 +858,6 @@ int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
     exit(2);
   }
   //
-  bool* filterLookup=(bool*)NULL;
-  int maxKey=0;
-  if (filterKeys!=(intv*)NULL) {
-    // Find largest key value in filterKeys
-    for (unsigned int j=0; j<filterKeys->size(); j++) {
-      if ((*filterKeys)[j]>maxKey) maxKey=(*filterKeys)[j];
-    }
-    // Create filterLookup array up to and including filterKeys
-    filterLookup=new bool[maxKey+1];
-    if (filterLookup==(bool*)NULL) {
-      cerr << "KeyTable::readTables123: Error - failed to allocate bool filterLookup[" << (maxKey+1) << "]" << endl;
-      exit(2);
-    }
-    for (int j=0; j<=maxKey; j++) {
-      filterLookup[j]=false;
-    }
-    for (unsigned int j=0; j<filterKeys->size(); j++) {
-      filterLookup[(*filterKeys)[j]]=true;
-    }
-    cout << "KeyTable::readTables123: created bool[" << (maxKey+1) << "] filterLookup array" << endl;
-  }
   int numKeys=0;
   int line=0;
   char* buf = new char[18];
@@ -914,7 +897,7 @@ int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
     // Check key against supplied list if filterKeys, ignore this entry if 
     // list is given by there is no match
     if ( (pruneAbove==0 || (int)docids.size()<=pruneAbove) &&
-         (filterKeys==(intv*)NULL || (key<=maxKey && filterLookup[key])) ) {
+         (filterKeys==(indexhashset*)NULL || (filterKeys->find(key)==filterKeys->end())) ) {
       //===== Add key and ids to KeyTable or keymap =====
       if (km==(keymap*)NULL) {
         // KeyTable...
@@ -934,8 +917,7 @@ int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
     if (in && (ch=in.get())) { in.putback(ch); } // read ahead to set in false if next to end    
   }
   //
-  // Delete large array we created for lookup, and buffer
-  delete[] filterLookup;
+  // Delete buffer
   delete[] buf;
   // Reset control for how table3 elements are added
   numDocidsInRead=-1;
@@ -947,7 +929,7 @@ int KeyTable::readTables123(istream& in, intv* filterKeys, keymap* km)
 // Format is dummy number (must be in sequence but not necessarily complete) and 
 // then document list on each line. Dummy number is 'XX######' where # is a hex digit.
 // 
-int KeyTable::readTables23(istream& in, intv* filterKeys, keymap* km)
+int KeyTable::readTables23(istream& in, indexhashset* filterKeys, keymap* km)
 {
   cerr << "KeyTable::readTables23 NOT YET IMPLEMENTED!!" << endl;
   exit(99);
@@ -956,7 +938,7 @@ int KeyTable::readTables23(istream& in, intv* filterKeys, keymap* km)
 }
 
 
-int KeyTable::readMultiFile(string& baseName, intv* filterKeys, keymap* km)
+int KeyTable::readMultiFile(string& baseName, indexhashset* filterKeys, keymap* km)
 {
   int numFiles=0;
   bool allTables=true;
@@ -1029,9 +1011,9 @@ istream& operator>>(istream& in, KeyTable& k) {
   int ch=in.get();
   in.putback(ch);
   if (ch=='X') {
-    k.readTables23(in,(intv*)NULL);
+    k.readTables23(in);
   } else {
-    k.readTables123(in,(intv*)NULL);
+    k.readTables123(in);
   }
   return(in);
 }

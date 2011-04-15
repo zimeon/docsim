@@ -6,7 +6,7 @@ LIBS=-lstdc++
 
 CPP = gcc
 CPPDEFS =
-CPPFLAGS = -O -Wall -I.
+CPPFLAGS = -g -O -Wall -I.
 
 .cpp.o:
 	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<

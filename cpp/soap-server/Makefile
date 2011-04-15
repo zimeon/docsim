@@ -23,7 +23,7 @@ DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../li
 #
 CPP=g++
 LIBS=
-COFLAGS=-O
+COFLAGS=-g -O
 CWFLAGS=-Wall
 CIFLAGS=-I../..
 CMFLAGS=

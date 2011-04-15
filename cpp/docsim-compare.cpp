@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     filterKeymap(allkeys,newkeys,sharedkeys);
   } else if (keyTableFile!="" || keyTableBase!="") {
     KeyTable dummyKT(bitsInKeyTable,true);
-    intv indexes;
+    indexhashset indexes;
     dummyKT.keysToIndexes(newkeys,indexes);
     ofstream iout;
     string indexesFile=prependPath(baseDir,"newdoc.indexes");

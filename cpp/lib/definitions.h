@@ -42,6 +42,7 @@ typedef vector<kgramkey> kgramkeyv;
 
 typedef std::tr1::unordered_set<kgramkey> keyhashset;
 typedef std::tr1::unordered_set<docid> docidhashset;
+typedef std::tr1::unordered_set<int> indexhashset;
 
 // Utility types based on standard types
 typedef vector<int> intv;
