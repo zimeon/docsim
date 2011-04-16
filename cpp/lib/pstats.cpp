@@ -2,8 +2,6 @@
 //
 // Code based on that from Trent (tapted) at 
 // http://www.linuxforums.org/forum/linux-programming-scripting/11703-c-function-returns-cpu-memory-usage.html
-//
-// $Id: pstats.cpp,v 1.2 2011-02-09 21:07:14 simeon Exp $
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -14,7 +12,7 @@
 
 // Return string describing memory usage
 //
-// Numbers is /proc/PID/statm are in 4096 byte pages
+// Numbers in /proc/PID/statm are in 4096 byte pages
 //
 string get_pstats_string(void) {
   char buf[30];
@@ -36,7 +34,7 @@ string get_pstats_string(void) {
     if (ret==6) {    
       // Write to string stream an get string
       sout << "data=" << (data/256.0)
-           << "MB: share=" << (share/256.0)
+           << "MB share=" << (share/256.0)
            << "MB code=" << (text/256.0)
            << "MB lib=" << (lib/256.0)
            << "MB  (total=" << (size/256.0)
