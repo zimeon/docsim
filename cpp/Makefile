@@ -1,7 +1,7 @@
 # Makefile for C++ code in DocSim suite
 # Simeon Warner - 2005-2011
 
-DOCSIMLIBS=lib/DocSet.o lib/DocInfo.o lib/Logger.o lib/KgramInfo.o lib/KeyMap.o lib/MarkedDoc.o lib/KeyTable.o lib/KeyTable3Element.o lib/DocPair.o lib/kgrams.o lib/options.o lib/files.o lib/pstats.o
+DOCSIMLIBS=lib/DocSet.o lib/DocInfo.o lib/Logger.o lib/KgramInfo.o lib/KeyMap.o lib/MarkedDoc.o lib/KeyTable.o lib/KeyTable3Element.o lib/DocPair.o lib/kgrams.o lib/options.o lib/files.o lib/pstats.o lib/anystream.o include/gzstream.o
 
 LIBSLACK=/usr/local/lib/libslack.a
 
@@ -10,19 +10,20 @@ STDLIBS=-lstdc++
 CPP = gcc
 # For gcc < 4.3 must add -D__NO_TR1__ to CPPDEFS, gcc >= 4.3 omit and use std::tr1::unordered_set|map instead of hash_set|map
 # within Docsim	this would usuall come via $(GLOBAL_CPPDEFS)
-CPPDEFS = 
+CPPDEFS =
 #CPPDEFS = -D__NO_TR1__
 GLOBAL_CPPDEFS = $(CPPDEFS)
 export GLOBAL_CPPDEFS
-CPPFLAGS = -g -O -Wall -I . -I lib
+CPPFLAGS = -g -O -Wall -I . -I lib -I include -lz
 
 .cpp.o:
-	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<
+	$(CPP) $(CPPFLAGS) $(CPPDEFS) -c $<
 
 all: docsimlibs docsim-analyze docsim-compare docsim-concat docsim-overlap findkgram kgramkey overlapd
 
 docsimlibs:
 	cd lib && make
+	cd include && make
 
 findkgram: $(DOCSIMLIBS) findkgram.o
 	gcc $(CPPFLAGS) -o findkgram findkgram.o $(DOCSIMLIBS) $(STDLIBS)

@@ -7,6 +7,7 @@
 #include "definitions.h"
 #include "options.h"
 #include "files.h"
+#include "anystream.h"
 #include "kgrams.h"
 #include "DocInfo.h"
 #include "KgramInfo.h"
@@ -27,14 +28,9 @@ DocInfo::~DocInfo(void)
 //
 void DocInfo::addToKeymap(keymap& keys, int maxDupesToCount, bool winnow)
 {
-  ifstream fin;     //stream associated with the file
-  fin.open(filename.c_str(),ios_base::in);
-  if (!fin.is_open()) {
-    cerr << "Error - failed to read from '" << filename << "'\n";
-    exit(2);
-  }
-  addToKeymap(fin,keys,maxDupesToCount,winnow);
-  fin.close();
+  istream* fin=open_plain_or_gz_file(filename);
+  addToKeymap(*fin,keys,maxDupesToCount,winnow);
+  delete(fin);
 }
 
 
@@ -113,12 +109,7 @@ void DocInfo::addToKeymap(istream& in, keymap& keys, int maxDupesToCount, bool w
 //
 void DocInfo::addToKeyTable(KeyTable& kt, int maxDupesToCount)
 {
-  ifstream fin;     //stream associated with the file
-  fin.open(filename.c_str(),ios_base::in);
-  if (!fin.is_open()) {
-    cerr << "Error - failed to read from '" << filename << "'\n";
-    exit(2);
-  }
+  istream* fin=open_plain_or_gz_file(filename);
 
 #ifdef DOCUMENT_STATS
   int linesInDoc=0;
@@ -132,7 +123,7 @@ void DocInfo::addToKeyTable(KeyTable& kt, int maxDupesToCount)
 
   char* buf;
   kgramkey* kgrams;
-  while ((buf=readLine(fin))!=(char*)NULL) {
+  while ((buf=readLine(*fin))!=(char*)NULL) {
     kgrams = getKgrams(buf);
     if (kgrams!=(kgramkey*)NULL) {
       for (kgramkey* k=kgrams; *k!=0; k++) {
@@ -160,7 +151,7 @@ void DocInfo::addToKeyTable(KeyTable& kt, int maxDupesToCount)
     }
 #endif
   }
-  fin.close();
+  delete(fin);
 #ifdef DOCUMENT_STATS
   // Write out the stats for this document. The first three numbers should be
   // the counts of lines,words,bytes as given by wc. Last number is the number
@@ -183,12 +174,7 @@ void DocInfo::addToKeyTable(KeyTable& kt, int maxDupesToCount)
 //
 char* DocInfo::findKgramInDoc(kgramkey key, int bits)
 {
-  ifstream fin;     //stream associated with the file
-  fin.open(filename.c_str(),ios_base::in);
-  if (!fin.is_open()) {
-    cerr << "Error - failed to read from '" << filename << "'" << endl;
-    exit(2);
-  }
+  istream* fin=open_plain_or_gz_file(filename);
 
   // Build so that mask is 0 or a set of bits 1's in the low order bits
   kgramkey mask=0;
@@ -204,7 +190,7 @@ char* DocInfo::findKgramInDoc(kgramkey key, int bits)
   char* buf;
   char* match;
   int line=0;
-  while ((buf=readLine(fin))!=(char*)NULL) { 
+  while ((buf=readLine(*fin))!=(char*)NULL) { 
     if (VERY_VERBOSE) cout << "line[" << line++ << "]: " << buf << "\n";
     if (mask>0) {
       match = findKgramWithMask(key,mask,buf);
@@ -212,30 +198,24 @@ char* DocInfo::findKgramInDoc(kgramkey key, int bits)
       match = findKgram(key,buf);
     }
     if (match!=(char*)NULL) {
-      fin.close();
+      delete(fin);
       return(match);
     }
   }
-  fin.close();
+  delete(fin);
   return((char*)NULL);
 }
 
 
 void DocInfo::markupDoc(ostream& out, keyhashset& keys)
 {
-  ifstream fin;     //stream associated with the file
-  fin.open(filename.c_str(),ios_base::in);
-  if (!fin.is_open()) {
-    cerr << "Error - failed to read from '" << filename << "'\n";
-    exit(2);
-  }
-  
+  istream* fin=open_plain_or_gz_file(filename);
   char* buf;
   int line=0;
   intv spaces;
   intv words;
   kgramkeyv kgramstarts;
-  while ((buf=readLine(fin))!=(char*)NULL) {
+  while ((buf=readLine(*fin))!=(char*)NULL) {
     if (VERY_VERBOSE) cout << "line[" << line++ << "]: " << buf << "\n";
     int wordsMatching = findWordsInKgrams(spaces,words,kgramstarts,keys,buf);
     if (wordsMatching<0) {
@@ -253,28 +233,22 @@ void DocInfo::markupDoc(ostream& out, keyhashset& keys)
       out << buf << endl;
     }
   }
-  fin.close();
+  delete(fin);
 }
 
 
 void DocInfo::markupCompleteDoc(MarkedDoc& mud, keyhashset& keys)
 {
-  ifstream fin;     //stream associated with the file
-  fin.open(filename.c_str(),ios_base::in);
-  if (!fin.is_open()) {
-    cerr << "Error - failed to read from '" << filename << "'\n";
-    exit(2);
-  }
-  
+  istream* fin=open_plain_or_gz_file(filename);
   char* buf;
   int line=0;
   intv spaces;
   intv words;
   kgramkeyv kgramstarts;
-  while ((buf=readLine(fin))!=(char*)NULL) {
+  while ((buf=readLine(*fin))!=(char*)NULL) {
     if (VERY_VERBOSE) cout << "line[" << line++ << "]: " << buf << "\n";
     (void)findWordsInKgrams(spaces,words,kgramstarts,keys,buf);
     mud.addLine(spaces,words,kgramstarts,buf);
   }
-  fin.close();
+  delete(fin);
 }

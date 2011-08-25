@@ -17,7 +17,7 @@ SOAPC=$(GSOAP_SRC)/stdsoap2.cpp
 
 # DocSim libs
 #
-DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../lib/KeyMap.o ../lib/MarkedDoc.o ../lib/KeyTable.o ../lib/KeyTable3Element.o ../lib/DocPair.o ../lib/kgrams.o ../lib/files.o ../lib/options.o ../lib/pstats.o
+DSOBJ= ../lib/DocSet.o ../lib/DocInfo.o ../lib/Logger.o ../lib/KgramInfo.o ../lib/KeyMap.o ../lib/MarkedDoc.o ../lib/KeyTable.o ../lib/KeyTable3Element.o ../lib/DocPair.o ../lib/kgrams.o ../lib/files.o ../lib/options.o ../lib/pstats.o ../lib/anystream.o ../include/gzstream.o
 
 # Compiler settings
 #
@@ -26,7 +26,7 @@ LIBS=
 COFLAGS=-g -O
 CDFLAGS=$(GLOBAL_CPPDEFS)
 CWFLAGS=-Wall
-CIFLAGS=-I../..
+CIFLAGS=-I../.. -lz
 CMFLAGS=
 CFLAGS= $(CWFLAGS) $(COFLAGS) $(CDFLAGS) $(CIFLAGS) $(CMFLAGS)
 
@@ -42,7 +42,7 @@ overlapd: overlapd.cpp soapServer.cpp $(DSOBJ)
 	$(CPP) $(CFLAGS) -I gsoap -I ../lib -o overlapd overlapd.cpp soapC.cpp soapServer.cpp $(SOAPC) $(DSOBJ) $(LIBS)
 
 clean:
-		rm -f *.o soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h overlapd
+	rm -f *.o soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h overlapd
 
 distclean:
-		rm -f *.o *.xml *.nsmap *.log soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h quote overlapd
+	rm -f *.o *.xml *.nsmap *.log soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h quote overlapd

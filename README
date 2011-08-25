@@ -54,6 +54,17 @@ For other systems, try sourceforge:
 http://sourceforge.net/projects/gsoap2/
 
 
+Other libraries
+---------------
+
+Gzstream - this library was downloaded from 
+http://www.cs.unc.edu/Research/compgeom/gzstream/
+on 2011-08-25 and is included within the cpp/include directory. It is 
+used to allow the code to read plain or gzip format data files (to allow 
+disk space saving). The make files for Docsim will compile this code.
+This is LGPL licensed.
+
+
 Testing
 -------
 
