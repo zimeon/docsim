@@ -99,7 +99,7 @@ void DocSet::getKeymap(keymap& allkeys, int maxKeysToCount, bool winnow, int sta
       if (i%100==0) cout << "DocSet::getKeymap[" << i << "]: " << docit->filename << endl;
     }
   }	
-  cout << "DocSet::getKeymap: read " << inc << " files, got " << allkeys.size() << " keys " << endl;
+  if (VERBOSE) cout << "DocSet::getKeymap: read " << inc << " files, got " << allkeys.size() << " keys " << endl;
 }
 
 
