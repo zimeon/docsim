@@ -160,16 +160,16 @@ int readOptions(int argc, char* argv[], string argsUsed, string myname, string u
       cout << myname << ":    filename1=" << filename1 << endl;
     }
     if (filename2.length()>0) {
-      cout << myname << ":    filename2=" << filename1 << endl;
+      cout << myname << ":    filename2=" << filename2 << endl;
     }
     if (key.length()>0) {
-      cout << myname << ":       key=" << key << endl;
+      cout << myname << ":          key=" << key << endl;
     }
     if (keyMapFile.length()>0) {
       cout << myname << ":   keyMapFile=" << keyMapFile << endl;
     }
     if (keyTableFile.length()>0) {
-      cout << myname << ":   keyMapFile=" << keyMapFile << endl;
+      cout << myname << ": keyTableFile=" << keyTableFile << endl;
     }
     if (keysForMatch>0) {
       cout << myname << ": keysForMatch=" << keysForMatch << endl;
