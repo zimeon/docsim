@@ -17,8 +17,9 @@
 
 const string myname="docsim-overlap";
 const string mydesc=
-"In -C mode writes HTML snippets from the direct comparison of two normalized text files. "
-"In -c mode the same comparison is done but no marked up documents are written.\n\n"
+"In -c mode writes HTML snippets from the direct comparison of two normalized text files. "
+"With -C <base> also specified then the output file then the base filename for the output "
+"comparisons can be overridden, output will be to <base>_short.html and <base>_long.html.\n\n"
 "In -s mode there is just a single results line starting with #STATS#: and followed by six "
 "numbers which are 'numWords numMatches longestChunkSize' from the perspective of document 1 and "
 "then from the perspective of document 2.\n\n"
@@ -33,7 +34,7 @@ int main(int argc, char* argv[])
   VERY_VERBOSE=0;
 
   // Read options using standard code for all of DocSim programs
-  readOptions(argc, argv, (const char*)"f:F:l:L:cC:s", myname, mydesc);
+  readOptions(argc, argv, (const char*)"f:F:l:L:cC:sS", myname, mydesc);
 
   if (compare || comparisonStatsOnly) {
     DocSet docs;
