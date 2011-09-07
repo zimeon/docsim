@@ -16,8 +16,16 @@
 #include <fstream>
 
 const string myname="docsim-overlap";
-const string mydesc="Write HTML snippets from the direct comparison of two normalized text files. Typical use:\n"
-"Does not yet have the ability to import a set a common kgrams which could then be marked accordingly.";
+const string mydesc=
+"In -C mode writes HTML snippets from the direct comparison of two normalized text files. "
+"In -c mode the same comparison is done but no marked up documents are written.\n\n"
+"In -s mode there is just a single results line starting with #STATS#: and followed by six "
+"numbers which are 'numWords numMatches longestChunkSize' from the perspective of document 1 and "
+"then from the perspective of document 2.\n\n"
+"If none of the -c -C or -s modes are specified then simply looks for the specific kgramkey "
+"given on the command line\n\n"
+"Does not yet have the ability to import a set a common kgrams which could then be used to "
+"mark document(s)";
 
 int main(int argc, char* argv[])
 {
@@ -33,14 +41,20 @@ int main(int argc, char* argv[])
     docid id2=docs.addFile(filename2);
     
     KeyMap allkeys;
-    cout << myname << ": Not using winnowing" << endl;
+    if (VERBOSE) { 
+      cout << myname << ": Not using winnowing" << endl;
+    }
     docs.getKeymap(allkeys, MAX_DUPES_TO_COUNT, false);
-    cout << myname << ": built KeyMap, " << allkeys.size() << " keys\n";
-    
+    if (VERBOSE) {
+      cout << myname << ": built KeyMap, " << allkeys.size() << " keys\n";
+    }
+ 
     KeyMap sharedkeys;
     docs.stripCommon(allkeys, sharedkeys, 2);
-    cout << myname << ": extracted " << sharedkeys.size() << " shared keys\n";
-    
+    if (VERBOSE) {
+      cout << myname << ": extracted " << sharedkeys.size() << " shared keys\n";
+    }
+
     if (!comparisonStatsOnly) {
       string allkeysFile=prependPath(baseDir,"allkeys.txt");
       ofstream akout;
@@ -70,10 +84,14 @@ int main(int argc, char* argv[])
 
     MarkedDoc mud1;
     docs[id1].markupCompleteDoc(mud1,shared);
-    cout << myname << ": Marked up document " << id1 << ", " <<  filename1 << endl;
+    if (VERBOSE) {
+      cout << myname << ": Marked up document " << id1 << ", " <<  filename1 << endl;
+    }
     MarkedDoc mud2;
     docs[id2].markupCompleteDoc(mud2,shared);
-    cout << myname << ": Marked up document " << id2 << ", " <<  filename2 << endl;
+    if (VERBOSE) {
+      cout << myname << ": Marked up document " << id2 << ", " <<  filename2 << endl;
+    }
     extendMarkups(mud1,mud2);    
       
     if (comparisonStatsOnly) {
@@ -133,12 +151,16 @@ int main(int argc, char* argv[])
       doc1.filename=filename1.c_str();
       MarkedDoc mud1;
       doc1.markupCompleteDoc(mud1,keys);
-      cout << myname << ": Gone through marking up " <<  filename1 << endl;
+      if (VERBOSE) {
+        cout << myname << ": Gone through marking up " <<  filename1 << endl;
+      }
       DocInfo doc2;
       doc2.filename=filename2.c_str();
       MarkedDoc mud2;
       doc2.markupCompleteDoc(mud2,keys);
-      cout << myname << ": Gone through marking up " <<  filename2 << endl;
+      if (VERBOSE) {
+        cout << myname << ": Gone through marking up " <<  filename2 << endl;
+      }
       extendMarkups(mud1,mud2);
    
       ofstream out;
@@ -162,7 +184,7 @@ int main(int argc, char* argv[])
     (void)strncpy(keystr,key.c_str(),18);
     //  char* key1="01fda04908cdbef3";
     kgramkey kk=stringToKgramkey(keystr);
-    cout << myname << ": looking for " << kgramkeyToString(kk) << endl;
+    cout << myname << ": looking for kgramkey '" << kgramkeyToString(kk) << "'" << endl;
         
     DocInfo doc;
     doc.filename=filename1.c_str();
