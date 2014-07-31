@@ -4,16 +4,22 @@
 #
 # Edit this to the location of your gsoap installation:
 
-GSOAP_PREFIX=/opt/gsoap-2.7
+# RHEL6 with gsoap and gsoap-devel 2.7.16 as of 2014-07
+# `sudo yum install gsoap gsoap-devel`
+# Change GSOAP_PREFIX if installed elsewhere
+GSOAP_PREFIX=/usr
+
+GSOAP_BIN=$(GSOAP_PREFIX)/bin
+GSOAP_INC=$(GSOAP_PREFIX)/include
+
+# Used only for overlapd-static
 GSOAP_SRC=gsoap
 
 ################## Makefile should not need configuration below this line ########################
 
-WSDL2H=$(GSOAP_PREFIX)/bin/wsdl2h
-GSOAP=$(GSOAP_PREFIX)/bin/soapcpp2
-SOAPH=$(GSOAP_SRC)/stdsoap2.h
-SOAPC=$(GSOAP_SRC)/stdsoap2.c
-SOAPC=$(GSOAP_SRC)/stdsoap2.cpp
+WSDL2H=$(GSOAP_BIN)/wsdl2h
+SOAPCPP2=$(GSOAP_BIN)/soapcpp2
+STDSOAP2H=$(GSOAP_INC)/stdsoap2.h
 
 # DocSim libs
 #
@@ -30,19 +36,27 @@ CIFLAGS=-I../.. -lz
 CMFLAGS=
 CFLAGS= $(CWFLAGS) $(COFLAGS) $(CDFLAGS) $(CIFLAGS) $(CMFLAGS)
 
+.PHONY: all
 all:	overlapd
 
 overlap.h: overlap.wsdl typemap.dat
-	$(WSDL2H) -s overlap.wsdl
+	$(WSDL2H) -s -t typemap.dat overlap.wsdl
 
 soapServer.cpp: overlap.h
-	$(GSOAP) overlap.h
+	$(SOAPCPP2) overlap.h
 
+# Normal binary uses gsoap++ shared system libraries 
 overlapd: overlapd.cpp soapServer.cpp $(DSOBJ)
-	$(CPP) $(CFLAGS) -I gsoap -I ../lib -o overlapd overlapd.cpp soapC.cpp soapServer.cpp $(SOAPC) $(DSOBJ) $(LIBS)
+	$(CPP) $(CFLAGS) -l gsoap++ -I ../lib -o overlapd overlapd.cpp soapC.cpp soapServer.cpp $(STDSOAP2H) $(DSOBJ) $(LIBS)
 
+# Alternative using compiled in gsoap (must match versions of wsdl2h & soapcpp2)
+overlapd-static: overlapd.cpp soapServer.cpp $(DSOBJ)
+	$(CPP) $(CFLAGS) -I gsoap -I ../lib -o overlapd-static overlapd.cpp soapC.cpp soapServer.cpp $(GSOAP_SRC)/stdsoap2.cpp $(DSOBJ) $(LIBS)
+
+.PHONY: clean
 clean:
-	rm -f *.o soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h overlapd
+	rm -f *.o soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soapClientLib.cpp soapServerLib.cpp soap*Proxy.h soap*Object.h overlap.h overlapd overlapd-static
 
-distclean:
-	rm -f *.o *.xml *.nsmap *.log soapH.h soapStub.h soapC.cpp soapC.c soapClient.cpp soapClient.c soapServer.cpp soapServer.c soap*Proxy.h quote overlapd
+.PHONY: distclean
+distclean: clean
+	rm -f *.xml *.nsmap *.log quote
