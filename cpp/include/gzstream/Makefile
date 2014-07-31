@@ -1,3 +1,5 @@
+# 2014-07-31 - Added -f to rm commands in clean recipes [Simeon Warner]
+#
 # ============================================================================
 # gzstream, C++ iostream classes wrapping the zlib compression library.
 # Copyright (C) 2001  Deepak Bandyopadhyay, Lutz Kettner
@@ -78,10 +80,10 @@ test_gunzip : test_gunzip.o libgzstream.a
 	${CXX} -o test_gunzip test_gunzip.o ${LDFLAGS}
 
 clean :
-	rm *.o
+	rm -f *.o
 
 cleanall :
-	rm *.o libgzstream.a test_gzip test_gunzip
+	rm -f *.o libgzstream.a test_gzip test_gunzip
 
 # ============================================================================
 # EOF
