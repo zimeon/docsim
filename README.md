@@ -37,7 +37,36 @@ To compile:
 > make
 ```
 
+This will build the command line docsim tools but will not build
+the SOAP-based `overlapd` daemon.
+
 ## gSOAP library
+
+The gSOAP library is needed in order to compile to `overlapd` 
+daemon that provides SOAP-based communication with a memory resident 
+overlap corpus.
+
+### RedHat (RHEL6)
+
+As of 2014-07 the standard RHEL6 packages for `gsoap` and `gsoap-devel`
+are version 2.7.16. These may be installed with:
+
+```
+sudo yum install gsoap gsoap-devel
+```
+
+This installs in the system paths with prefix `/usr` (ie. shared 
+libraries in `/usr/lib`, headers in `/usr/include`, binaries in
+`/usr/bin`). The `Makefile` in `cpp/soap-server` is set up for these
+locations. From the root directory, make `overlapd` with:
+
+```
+make soap
+```
+
+### Debian and derivatives
+
+*Warning - notes from 2007 and may be out of date*
 
 On Debian and derivative systems (e.g. Ubuntu) this should be
 available for etch and later distributions via apt. Install with, e.g.
@@ -47,7 +76,10 @@ sudo apt-get install gsoap
 ```
 
 In March 2007 the current version on etch was 2.7.6 which was fine and
-apt installed it in /usr/lib.
+apt installed it under `/usr`. The `Makefile` in `cpp/soap-server` 
+is set up for this location.
+
+### Other systems
 
 For other systems, try sourceforge:
 <http://sourceforge.net/projects/gsoap2/>

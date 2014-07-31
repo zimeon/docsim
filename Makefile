@@ -1,13 +1,25 @@
-# Makefile for Docsim suite
-# Simeon Warner
+# Makefile for DocSim suite
+# Simeon Warner - 2005-2014
+
+.PHONY: main
+main: cpp-main
 
 .PHONY: all
-all:  cpp
+all: cpp-main cpp-soap
 
-.PHONY: cpp
-cpp:
-	@echo "===> Building C++ code"
-	cd cpp && make
+.PHONY: soap
+soap: cpp-soap
+ 
+.PHONY: cpp-main
+cpp-main:
+	@echo "===> Building main C++ code"
+	cd cpp && make main
+	@echo "(use make soap to also build the SOAP server)"
+
+.PHONY: cpp-soap
+cpp-soap:
+	@echo "===> Building SOAP server C++ code"
+	cd cpp && make soap
 
 .PHONY: clean
 clean:

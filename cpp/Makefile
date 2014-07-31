@@ -1,5 +1,5 @@
 # Makefile for C++ code in DocSim suite
-# Simeon Warner - 2005-2011
+# Simeon Warner - 2005-2014
 
 DOCSIMLIBS=lib/DocSet.o lib/DocInfo.o lib/Logger.o lib/KgramInfo.o lib/KeyMap.o lib/MarkedDoc.o lib/KeyTable.o lib/KeyTable3Element.o lib/DocPair.o lib/kgrams.o lib/options.o lib/files.o lib/pstats.o lib/anystream.o include/gzstream.o
 
@@ -19,7 +19,14 @@ CPPFLAGS = -g -O -Wall -I . -I lib -I include -lz
 .cpp.o:
 	$(CPP) $(CPPFLAGS) $(CPPDEFS) -c $<
 
-all: docsimlibs docsim-analyze docsim-compare docsim-concat docsim-overlap findkgram kgramkey overlapd
+.PHONY: main
+main: docsimlibs docsim-analyze docsim-compare docsim-concat docsim-overlap findkgram kgramkey
+
+.PHONY: soap
+soap: docsimlibs overlapd
+
+.PHONY: all
+all: main soap
 
 docsimlibs:
 	cd lib && make
@@ -135,6 +142,7 @@ clean:
 	rm -f test_kgrams test_kgrams.o
 	rm -f test_KeyTable test_KeyTable.o
 	cd lib && make clean
+	cd include && make clean
 	cd soap-server && make clean
 
 .PHONY: tar
