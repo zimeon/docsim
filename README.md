@@ -97,11 +97,17 @@ This is LGPL licensed.
 
 ## Testing
 
-For a simple test run with data supplied:
+For a simple test run with data supplied. First create analyze a set of
+testdata to build a keys file:
 
 ```
-./docsim-analyze -d testdata/arxiv-cs-500 -f testdata/arxiv-cs-500/files.txt -b 20
-./docsim-compare -f testdata/arxiv-cs-500/cs/9912/9912018.psv -b 20 -T /tmp/allkeys
+cpp/docsim-analyze -d testdata/arxiv-publicdomain -f testdata/arxiv-publicdomain/files.txt -b 20
+```
+
+And then compare one of the documents against the corpus:
+
+```
+cpp/docsim-compare -f testdata/arxiv-publicdomain/0012/math0012129.txt.gz -b 20 -T /tmp/allkeys
 ```
 
 

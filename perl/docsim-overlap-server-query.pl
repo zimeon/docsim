@@ -25,7 +25,7 @@ usage: docsim-overlap-server-query.pl [-f file|-n num|-s] [-h] [-v]
 
 To use test data:
 
- ./docsim-analyze -d testdata/arxiv-cs-500 -f testdata/arxiv-cs-500/files.txt
+ ./docsim-analyze -d testdata/arxiv-publicdomain -f testdata/arxiv-publicdomain/files.txt
  ./soap-server/overlapd -b 20 -T /tmp/allkeys
 
 Then in a separate window run the test:

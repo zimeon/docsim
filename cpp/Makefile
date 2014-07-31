@@ -16,6 +16,10 @@ GLOBAL_CPPDEFS = $(CPPDEFS)
 export GLOBAL_CPPDEFS
 CPPFLAGS = -g -O -Wall -I . -I lib -I include -lz
 
+# Configuration for tests
+TESTDATA = ../testdata/arxiv-publicdomain
+TESTTMP  = /tmp
+
 .cpp.o:
 	$(CPP) $(CPPFLAGS) $(CPPDEFS) -c $<
 
@@ -106,16 +110,16 @@ test:
 #### A set of commands to setup test1
 
 test1_analyse: docsim-analyze
-	./docsim-analyze -d testdata/arxiv-cs-500 -f testdata/arxiv-cs-500/files.txt -b 20 -o tmp
+	./docsim-analyze -d $(TESTDATA) -f $(TESTDATA)/files.txt -b 20 -o $(TESTTMP)
 
 test1_run_overlapd: overlapd
-	./soap-server/overlapd -b 20 -T tmp/allkeys
+	./soap-server/overlapd -b 20 -T $(TESTTMP)/allkeys
 
 test1_query1: test-overlap_server.pl
-	./test-overlap_server.pl -q testdata/arxiv-cs-500/cs/9903/9903001.psv -f testdata/arxiv-cs-500/files.txt -d testdata/arxiv-cs-500/
+	./test-overlap_server.pl -q $(TESTDATA)/cs/9903/9903001.psv -f $(TESTDATA)/files.txt -d $(TESTDATA)/
 
 test1_query2: test-overlap_server.pl
-	./test-overlap_server.pl -q testdata/arxiv-cs-500/cs/9903/9903002.psv -f testdata/arxiv-cs-500/files.txt -d testdata/arxiv-cs-500/
+	./test-overlap_server.pl -q $(TESTDATA)/cs/9903/9903002.psv -f $(TESTDATA)/files.txt -d $(TESTDATA)/
 
 
 test2: test2_analyze
