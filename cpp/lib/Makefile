@@ -12,7 +12,10 @@ CPPDEFS = -DSTRICT_CHECKS $(GLOBAL_CPPDEFS)
 #CPPDEFS = -D__NO_TR1__ -DSTRICT_CHECKS
 CPPFLAGS = -g -O -Wall -I .
 
-.cpp.o:
+%.o: %.cpp %.h
+	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<
+
+%.o: %.cpp
 	$(CPP) $(CPPDEFS) $(CPPFLAGS) -c $<
 
 all: $(OBJ)
