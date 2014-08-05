@@ -128,7 +128,11 @@ istream& operator>>(istream& in, keymap& keys)
 
 
 //===================================================================================
-// Take two keymaps and filters out all keys that do not exist in the second keymap
+// Takes two keymaps (ks and kf) and add all shared to the a third (kr).
+//
+// Implememted by interating over all keys in the first keymap and searching for the
+// key in the second. Adds to third (kr) if found. In normal use we expect kr to be 
+// empty when called but this need not be the case.
 //
 void filterKeymap(keymap& ks, keymap& kf, keymap& kr)
 {
