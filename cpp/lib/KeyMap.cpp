@@ -38,13 +38,13 @@ KeyMap::~KeyMap(void)
 // 
 void KeyMap::getCommonDocs(DocPairVector& dpv, int n, docid id2)
 {
-  cout << "getCommonDocs: called on keymap with " << size() << " ids" << endl;
+  cout << "getCommonDocs: called on keymap with " << size() << " keys, threshold=" << n << endl;
   // Find largest docid
   docid maxDocid=0;
   for (KeyMap::iterator kit=begin(); kit!=end(); kit++) {
     // kit->second is KgramInfo object, has ids[0..idsSize]
     KgramInfo* ki=kit->second;
-    for (int j=0; j<(ki->idsSize); j++) {
+    for (int j=0; j<(ki->size()); j++) {
       if (ki->ids[j]>maxDocid) maxDocid=ki->ids[j];
     }
   }
@@ -142,7 +142,7 @@ void filterKeymap(keymap& ks, keymap& kf, keymap& kr)
     if (ksit!=ks.end()) {
       // This kgram is in both maps
       //cout << "ksit: " << *ksit->second << endl;
-      KgramInfo* kip=new KgramInfo(*ksit->second);
+      KgramInfo* kip=new KgramInfo(ksit->second);
       //cout << kip  << endl;
       kr.insert(keymap::value_type(ksit->first,kip));
     }
