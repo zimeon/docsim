@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   VERY_VERBOSE=0;
 
   // Read options using standard code for all of DocSim programs
-  readOptions(argc, argv, (const char*)"d:o:f:m:St:T:b:n:", myname, "Compare a new document with data in an existing map");
+  readOptions(argc, argv, (const char*)"d:o:f:m:St:T:b:n:", myname, "Compare a new document with data for a corpus in an existing map");
  
   // Load new file and create KeyMap
   KeyMap newkeys;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   ndout.open(newdocKeyMapFile.c_str(),ios_base::out);
   ndout << newkeys;
   ndout.close();
-  cout << myname << ": read new doc with " << newkeys.size() << " keys, KeyMap dumped to " << newdocKeyMapFile << endl;
+  cout << myname << ": read new doc, got " << newkeys.size() << " keys, KeyMap dumped to " << newdocKeyMapFile << endl;
   
   // Now, somehow get a KeyMap of the overlap. What we load depends on the command
   // line options...
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     }
     kin >> allkeys;
     kin.close();
-    cout << myname << ": read KeyMap with " << allkeys.size() << " keys." << endl;
+    cout << myname << ": read corpus KeyMap with " << allkeys.size() << " keys." << endl;
     if (allkeys.size()==0) {
       cerr << myname << ": no keys read, aborting" << endl;
       exit(1);
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
       dummyKT.readMultiFile(fullKeyTableBase,&indexes,&sharedkeys);
     }
   } else {
-    cerr << myname << ": Error - didn't find keyMapFile (-K), keyTableFile (-t) or keyTableBase (-T)." << endl;
+    cerr << myname << ": Error - didn't find keyMapFile (-m), keyTableFile (-t) or keyTableBase (-T)." << endl;
     exit(2);
   }
  
