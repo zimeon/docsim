@@ -29,7 +29,7 @@ clean:
 # 
 VALGRIND = /usr/bin/valgrind
 
-soap_server_leak_test: testdata $(VALGRIND) cpp
+soap_server_leak_test: $(VALGRIND) cpp
 	@echo "===> Doing memory leak test (may take some time)"
 	@echo "=> Running analysis to get test data"
 	cpp/docsim-analyze -d testdata/arxiv-publicdomain -f testdata/arxiv-publicdomain/files.txt -b 20
@@ -44,7 +44,3 @@ soap_server_leak_test: testdata $(VALGRIND) cpp
 	@echo "=> The valgrind output should not report any memory leaks"
 	-kill -INT `pidof -s $(VALGRIND).bin`
 	@echo "=> Done, check output above for memory issues"
-
-testdata:
-	@echo "Error - testdata directory does not exist"
-	exit(1)

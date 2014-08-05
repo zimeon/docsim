@@ -92,7 +92,16 @@ test_KeyTable: test_KeyTable.cpp lib/KeyTable.cpp lib/KeyTable3Element.o lib/Key
 
 ####
 
+.PHONY: test-all
+test-all: test test-overlapd
+
+.PHONY: test
 test:
+	make test1_analyse
+	make test1_compare_doc1
+
+.PHONE: test-overlapd
+test-overlapd:
 	make test1_analyse
 	@echo -e "\n\n==== STARTING overlapd ====\n\n";
 	make test1_run_overlapd &
@@ -109,11 +118,19 @@ test:
 
 #### A set of commands to setup test1
 
-test1_analyse: docsim-analyze
+test1_analyse: docsim-analyze $(TESTTMP)/test1_allkeys_1.keytable
+
+$(TESTTMP)/test1_allkeys_1.keytable:
+	@echo "Building test keytable from files in $(TESTDATA)/files.txt"	
 	./docsim-analyze -d $(TESTDATA) -f $(TESTDATA)/files.txt -b 20 -o $(TESTTMP)
+	mv $(TESTTMP)/allkeys_1.keytable $(TESTTMP)/test1_allkeys_1.keytable
+
+test1_compare_doc1:
+	@echo "Use docsim-compare to find an exact match document in the corpus"
+	./docsim-compare -T $(TESTTMP)/test1_allkeys -b 20 -f $(TESTDATA)/0705/0705.1023.txt.gz
 
 test1_run_overlapd: overlapd
-	./soap-server/overlapd -b 20 -T $(TESTTMP)/allkeys
+	./soap-server/overlapd -b 20 -T $(TESTTMP)/test1_allkeys
 
 test1_query1: test-overlap_server.pl
 	./test-overlap_server.pl -q $(TESTDATA)/cs/9903/9903001.psv -f $(TESTDATA)/files.txt -d $(TESTDATA)/
