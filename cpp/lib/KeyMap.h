@@ -35,6 +35,7 @@ public:
 
 };
 
-inline void filterKeymap(KeyMap& ks, KeyMap& kf, KeyMap& kr) { filterKeymap(ks,kf,kr); }
+//was necessary (?) by now (2014-08) causes recursive call on RHEL6
+//inline void filterKeymap(KeyMap& ks, KeyMap& kf, KeyMap& kr) { filterKeymap(ks,kf,kr); }
 
 #endif /* #ifndef __INC_KeyMap */
