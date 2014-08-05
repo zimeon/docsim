@@ -37,7 +37,7 @@ string link2="";
 string key="";
 string kgram="";
 string keyMapFile="";
-int bitsInKeyTable=20;
+int bitsInKeyTable=0;
 string keyTableFile="";
 string keyTableBase="";
 int keysForMatch=10;
@@ -237,6 +237,10 @@ void writeUsage(char* args_str, string myname, string usage)
     case 'L':
       shortArgs << " -L <link2>";
       longArgs << "  -L <link2>         Link to associate with filename2" << endl;
+      break;
+    case 'm':
+      shortArgs << " -m <KeyMapFile>";
+      longArgs << "  -m <KeyMapFile>    Full name of KeyMap file to read" << endl;
       break;
     case 'o':
       shortArgs << " -o <basedir>";
