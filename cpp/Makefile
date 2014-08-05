@@ -36,22 +36,22 @@ docsimlibs:
 	cd lib && make
 	cd include && make
 
-findkgram: $(DOCSIMLIBS) findkgram.o
+findkgram: docsimlibs findkgram.o
 	gcc $(CPPFLAGS) -o findkgram findkgram.o $(DOCSIMLIBS) $(STDLIBS)
 
-kgramkey: $(DOCSIMLIBS) kgramkey.o
+kgramkey: docsimlibs kgramkey.o
 	gcc $(CPPFLAGS) -o kgramkey kgramkey.o $(DOCSIMLIBS) $(STDLIBS)
 
-docsim-analyze: $(DOCSIMLIBS) docsim-analyze.o
+docsim-analyze: docsimlibs docsim-analyze.o
 	gcc $(CPPFLAGS) -o docsim-analyze docsim-analyze.o $(DOCSIMLIBS) $(STDLIBS)
 
-docsim-compare: $(DOCSIMLIBS) docsim-compare.o
+docsim-compare: docsimlibs docsim-compare.o
 	gcc $(CPPFLAGS) -o docsim-compare docsim-compare.o $(DOCSIMLIBS) $(STDLIBS)
 
-docsim-concat: $(DOCSIMLIBS) docsim-concat.o
+docsim-concat: docsimlibs docsim-concat.o
 	gcc $(CPPFLAGS) -o docsim-concat docsim-concat.o $(DOCSIMLIBS) $(STDLIBS)
 
-docsim-overlap: $(DOCSIMLIBS) docsim-overlap.o
+docsim-overlap: docsimlibs docsim-overlap.o
 	gcc $(CPPFLAGS) -o docsim-overlap docsim-overlap.o $(DOCSIMLIBS) $(STDLIBS)
 
 overlapd:
@@ -97,8 +97,8 @@ test-all: test test-overlapd
 
 .PHONY: test
 test:
-	make test1_analyse
-	make test1_compare_doc1
+	make test1_analyse_keymap
+	make test1_compare_keymap_doc1
 
 .PHONE: test-overlapd
 test-overlapd:
@@ -118,16 +118,23 @@ test-overlapd:
 
 #### A set of commands to setup test1
 
-test1_analyse: docsim-analyze $(TESTTMP)/test1_allkeys_1.keytable
-
-$(TESTTMP)/test1_allkeys_1.keytable:
-	@echo "Building test keytable from files in $(TESTDATA)/files.txt"	
+test1_analyse: docsim-analyze 
+	@echo "Building test KeyTable from files in $(TESTDATA)/files.txt"	
 	./docsim-analyze -d $(TESTDATA) -f $(TESTDATA)/files.txt -b 20 -o $(TESTTMP)
 	mv $(TESTTMP)/allkeys_1.keytable $(TESTTMP)/test1_allkeys_1.keytable
 
-test1_compare_doc1:
-	@echo "Use docsim-compare to find an exact match document in the corpus"
-	./docsim-compare -T $(TESTTMP)/test1_allkeys -b 20 -f $(TESTDATA)/0705/0705.1023.txt.gz
+test1_analyse_keymap: docsim-analyze 
+	@echo "Building test KeyMap from files in $(TESTDATA)/files.txt"	
+	./docsim-analyze -d $(TESTDATA) -f $(TESTDATA)/files100.txt -o $(TESTTMP)
+	mv $(TESTTMP)/allkeys.txt $(TESTTMP)/test1_allkeys.txt
+
+test1_compare_doc1: docsim-compare 
+	@echo "Use docsim-compare to find an exact match document in the corpus from KeyTable"
+	./docsim-compare -T $(TESTTMP)/test1_allkeys -b 20 -f $(TESTDATA)/1012/1012.5086.txt.gz
+
+test1_compare_keymap_doc1: docsim-compare 
+	@echo "Use docsim-compare to find an exact match document in the corpus from KeyMap"
+	./docsim-compare -m $(TESTTMP)/test1_allkeys.txt -f $(TESTDATA)/1012/1012.5086.txt.gz
 
 test1_run_overlapd: overlapd
 	./soap-server/overlapd -b 20 -T $(TESTTMP)/test1_allkeys
