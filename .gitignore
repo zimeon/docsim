@@ -3,3 +3,11 @@
 
 # object files
 *.o
+
+# compiled executables
+/cpp/docsim-analyze
+/cpp/docsim-compare
+/cpp/docsim-concat
+/cpp/docsim-overlap
+/cpp/findkgram
+/cpp/kgramkey
