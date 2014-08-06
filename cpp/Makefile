@@ -97,8 +97,8 @@ test-all: test test-overlapd
 
 .PHONY: test
 test:
-	make test1_analyse_keymap
-	make test1_compare_keymap_doc1
+	@echo "Running functional tests in Perl (get details with prove -v)..."
+	prove
 
 .PHONE: test-overlapd
 test-overlapd:
@@ -123,18 +123,9 @@ test1_analyse: docsim-analyze
 	./docsim-analyze -d $(TESTDATA) -f $(TESTDATA)/files.txt -b 20 -o $(TESTTMP)
 	mv $(TESTTMP)/allkeys_1.keytable $(TESTTMP)/test1_allkeys_1.keytable
 
-test1_analyse_keymap: docsim-analyze 
-	@echo "Building test KeyMap from files in $(TESTDATA)/files.txt"	
-	./docsim-analyze -d $(TESTDATA) -f $(TESTDATA)/files100.txt -o $(TESTTMP)
-	mv $(TESTTMP)/allkeys.txt $(TESTTMP)/test1_allkeys.txt
-
 test1_compare_doc1: docsim-compare 
 	@echo "Use docsim-compare to find an exact match document in the corpus from KeyTable"
 	./docsim-compare -T $(TESTTMP)/test1_allkeys -b 20 -f $(TESTDATA)/1012/1012.5086.txt.gz
-
-test1_compare_keymap_doc1: docsim-compare 
-	@echo "Use docsim-compare to find an exact match document in the corpus from KeyMap"
-	./docsim-compare -m $(TESTTMP)/test1_allkeys.txt -f $(TESTDATA)/1012/1012.5086.txt.gz
 
 test1_run_overlapd: overlapd
 	./soap-server/overlapd -b 20 -T $(TESTTMP)/test1_allkeys
