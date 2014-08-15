@@ -19,6 +19,7 @@
 #define DEFAULT_BASE_DIR "/tmp"
 #define DEFAULT_DATA_DIR "."
 #define DEFAULT_KEYS_FOR_MATCH 10
+#define DEFAULT_CANDIDATES_FILE "candidates.dpv"
 
 // Debugging messages
 int VERBOSE=0;
@@ -54,6 +55,7 @@ int rangeStart=0;
 int rangeEnd=0;
 int selectBits=0;
 int selectMatch=0;
+string candidatesFile=DEFAULT_CANDIDATES_FILE;
 
 int readOptions(int argc, char* argv[], string argsUsed, string myname, string usage)
 {
@@ -129,6 +131,9 @@ int readOptions(int argc, char* argv[], string argsUsed, string myname, string u
       break;
     case 'S':
       RESPECT_SENTENCES=true;
+      break;
+    case 'p':
+      candidatesFile=string(optarg);
       break;
     case 'r':
       range=(string)optarg;
@@ -248,12 +253,16 @@ void writeUsage(char* args_str, string myname, string usage)
       break;
     case 'n':
       shortArgs << " -n <keysForMatch>";
-      longArgs << "  -m <keysForMatch>  Number of matching keys for a document match (default " << DEFAULT_KEYS_FOR_MATCH << ")" << endl;
+      longArgs << "  -n <keysForMatch>  Number of matching keys for a document match (default " << DEFAULT_KEYS_FOR_MATCH << ")" << endl;
       break;
     case 'o':
       shortArgs << " -o <basedir>";
       longArgs << "  -o <basedir>       Output file base directory (default " << DEFAULT_BASE_DIR << ")" << endl;
       break; 
+    case 'p':
+      shortArgs << " -p <candidates>";
+      longArgs << "  -p <candidates>    File name for candidate overlaps (a DocPairVector, default " << DEFAULT_CANDIDATES_FILE << ")" << endl;
+      break;
     case 'r':
       shortArgs << " -r <docid-range>";
       longArgs << "  -r <docid-range>   Add in data from documents in range start-end" << endl;

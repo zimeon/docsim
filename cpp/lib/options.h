@@ -41,6 +41,7 @@ extern int rangeStart;
 extern int rangeEnd;
 extern int selectBits;
 extern int selectMatch;
+extern string candidatesFile;
 
 int readOptions(int argc, char* argv[], string argsUsed, string myname, string usage);
 void writeUsage(char* args_str, string myname, string usage);

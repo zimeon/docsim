@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   VERY_VERBOSE=0;
 
   // Read options using standard code for all of DocSim programs
-  readOptions(argc, argv, (const char*)"d:o:f:m:St:T:b:n:", myname, "Compare a new document with data for a corpus in an existing map");
+  readOptions(argc, argv, (const char*)"d:o:f:p:m:St:T:b:n:", myname, "Compare a new document (-f) with data for a corpus in an existing map (-m, -t or -T). Writes out candidate overlapping documents (-p) that have at least keysForMatch (-n) overlapping keys");
  
   // Load new file and create KeyMap
   KeyMap newkeys;
@@ -52,6 +52,9 @@ int main(int argc, char* argv[])
     KeyMap allkeys;
     string fullKeyMapFile=prependPath(baseDir,keyMapFile);
     ifstream kin;
+    if (VERY_VERBOSE) {
+      cerr << myname << ": going to read keyMapFile " << fullKeyMapFile << endl;
+    }
     kin.open(fullKeyMapFile.c_str(),ios_base::in);
     if (!kin.good()) {
       cerr << myname << ": Error - failed to open '" << fullKeyMapFile << "' to read KeyMap, aborting!" << endl;
@@ -105,10 +108,10 @@ int main(int argc, char* argv[])
 
   DocPairVector dpv;
   sharedkeys.getCommonDocs(dpv, keysForMatch);
-  string candidateFile=prependPath(baseDir,"candidates.dpv");
-  cout << myname << ": Writing " << dpv.size() << " overlapping (>=" << keysForMatch << " keys) docs to " << candidateFile << endl;
+  string candidatesFilePath=prependPath(baseDir,candidatesFile);
+  cout << myname << ": Writing " << dpv.size() << " overlapping (>=" << keysForMatch << " keys) docs to " << candidatesFilePath << endl;
   ofstream cdout;
-  cdout.open(candidateFile.c_str(),ios_base::out);
+  cdout.open(candidatesFilePath.c_str(),ios_base::out);
   cdout << dpv;
   cdout.close();
   
