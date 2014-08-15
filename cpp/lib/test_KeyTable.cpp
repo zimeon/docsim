@@ -4,8 +4,9 @@
 
 #include "definitions.h"
 #include "kgrams.h"
+#include "KeyMap.h"
 #include "KeyTable.h"
-#include "lib/options.h"
+#include "options.h"
 
 int main(int argc, char* argv[]) 
 {
@@ -111,16 +112,16 @@ int main(int argc, char* argv[])
   if (!ktin2) {
     cerr << "test_KeyTable: failed to open " << outFile1 << endl;
   } 
-  dummyKT.readTables123(ktin2, (intv*)NULL, &km);
+  dummyKT.readTables123(ktin2, (indexhashset*)NULL, &km);
   ktin2.close();
   cout << "Got KeyMap from " << outFile1 << endl << km;
 
   km.clear();
-  intv indexes;
-  indexes.push_back(5);
-  indexes.push_back(6);
-  indexes.push_back(7);
-  indexes.push_back(8);
+  indexhashset indexes;
+  indexes.insert(5);
+  indexes.insert(6);
+  indexes.insert(7);
+  indexes.insert(8);
   cout << "Reading KeyTable as KeyMap single file from " << outFile1 << " with filter (5,6,7,8)" << endl;
   ifstream ktin3;
   ktin3.open(outFile1.c_str(),ios_base::in);

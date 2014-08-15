@@ -13,3 +13,7 @@
 /cpp/kgramkey
 /cpp/lib/test_pstats
 /cpp/lib/test_KeyTable3Element
+/cpp/lib/test_KeyTable
+/cpp/lib/test_KgramInfo
+/cpp/lib/test_kgrams
+/cpp/lib/*.dSYM

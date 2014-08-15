@@ -13,6 +13,7 @@
 #include "kgrams.h"
 #include "KgramInfo.h"
 #include "DocPair.h"
+using namespace std;
 
 #ifdef __NO_TR1__
   typedef hash_map<kgramkey,KgramInfo*> keymap;

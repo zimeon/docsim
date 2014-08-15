@@ -66,12 +66,6 @@ docsim_stats: docsimlibs
 	gcc $(CPPFLAGS) -DDOCUMENT_STATS -o docsim_stats $(DOCSIMLIBS) $(STDLIBS)
 	rm -f DocInfo.o
 
-test_kgrams: test_kgrams.o docsimlibs
-	gcc $(CPPFLAGS) -o test_kgrams test_kgrams.o lib/kgrams.o lib/options.o $(STDLIBS)
-
-test_KgramInfo: test_KgramInfo.o KgramInfo.o kgrams.o definitions.o
-	gcc $(CPPFLAGS) -o test_KgramInfo KgramInfo.o kgrams.o definitions.o test_KgramInfo.o $(STDLIBS)
-
 DocSet.o: DocSet.cpp DocSet.h definitions.h
 
 DocInfo.o: DocInfo.cpp DocInfo.h definitions.h
@@ -83,12 +77,6 @@ MarkedDoc.o: MarkedDoc.cpp MarkedDoc.h definitions.h
 Logger.o: Logger.cpp Logger.h definitions.h
 
 files.o: files.cpp files.h definitions.h
-
-test_KeyTable: test_KeyTable.cpp lib/KeyTable.cpp lib/KeyTable3Element.o lib/KeyTable.h lib/kgrams.o lib/KeyMap.o lib/KgramInfo.o lib/options.o lib/pstats.o
-	gcc $(CPPDEFS) $(CPPFLAGS) -DSTRICT_CHECKS -c lib/KeyTable.cpp
-	gcc $(CPPDEFS) $(CPPFLAGS) -DSTRICT_CHECKS -c test_KeyTable.cpp
-	gcc $(CPPFLAGS) -o test_KeyTable test_KeyTable.o lib/options.o lib/kgrams.o lib/KeyTable.o lib/KeyTable3Element.o lib/KeyMap.o lib/KgramInfo.o lib/DocPair.o lib/pstats.o $(STDLIBS)
-	#rm KeyTable.o
 
 ####
 

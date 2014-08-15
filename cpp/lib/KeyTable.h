@@ -10,6 +10,7 @@
 #include "KeyMap.h"
 #include "DocPair.h"
 #include "KeyTable3Element.h"
+using namespace std;
 
 typedef vector<KeyTable3Element> table3_type;
 
