@@ -11,3 +11,5 @@
 /cpp/docsim-overlap
 /cpp/findkgram
 /cpp/kgramkey
+/cpp/lib/test_pstats
+/cpp/lib/test_KeyTable3Element
