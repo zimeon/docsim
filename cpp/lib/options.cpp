@@ -16,6 +16,10 @@
 #include <string.h> // for strncpy()
 #include <sstream>
 
+#define DEFAULT_BASE_DIR "/tmp"
+#define DEFAULT_DATA_DIR "."
+#define DEFAULT_KEYS_FOR_MATCH 10
+
 // Debugging messages
 int VERBOSE=0;
 int VERY_VERBOSE=0;
@@ -28,8 +32,8 @@ int WINW=(WINT-WINK+1);
 // Respect newline as sentence boundary or not
 int RESPECT_SENTENCES=0;
 
-string dataDir="";
-string baseDir="/tmp";
+string dataDir=DEFAULT_DATA_DIR;
+string baseDir=DEFAULT_BASE_DIR;
 string filename1="";
 string link1="";
 string filename2="";
@@ -40,7 +44,7 @@ string keyMapFile="";
 int bitsInKeyTable=0;
 string keyTableFile="";
 string keyTableBase="";
-int keysForMatch=10;
+int keysForMatch=DEFAULT_KEYS_FOR_MATCH;
 bool writeSharedKeys=false;
 bool compare=false;
 string comparisonFile="comparison";  // will have _long.html or _short.html prepended
@@ -212,7 +216,7 @@ void writeUsage(char* args_str, string myname, string usage)
       break;
     case 'd':
       shortArgs << " -d <datadir>";
-      longArgs << "  -d <datadir>       Specify data directory for input files [default pwd]" << endl;
+      longArgs << "  -d <datadir>       Specify data directory for input files (default " << DEFAULT_DATA_DIR << ")" << endl;
       break;
     case 'f':
       shortArgs << " -f <filename1>";
@@ -242,9 +246,13 @@ void writeUsage(char* args_str, string myname, string usage)
       shortArgs << " -m <KeyMapFile>";
       longArgs << "  -m <KeyMapFile>    Full name of KeyMap file to read" << endl;
       break;
+    case 'n':
+      shortArgs << " -n <keysForMatch>";
+      longArgs << "  -m <keysForMatch>  Number of matching keys for a document match (default " << DEFAULT_KEYS_FOR_MATCH << ")" << endl;
+      break;
     case 'o':
       shortArgs << " -o <basedir>";
-      longArgs << "  -o <basedir>       Output file base directory [default /tmp]" << endl;
+      longArgs << "  -o <basedir>       Output file base directory (default " << DEFAULT_BASE_DIR << ")" << endl;
       break; 
     case 'r':
       shortArgs << " -r <docid-range>";
@@ -256,7 +264,7 @@ void writeUsage(char* args_str, string myname, string usage)
       break;
     case 'S':
       shortArgs << " -S";
-      longArgs << "  -S                 Respect newline as sentence break, winnow within sentences only [default off]" << endl;
+      longArgs << "  -S                 Respect newline as sentence break, winnow within sentences only (default off)" << endl;
       break;
     case 't':
       shortArgs << " -t <KeyTableFile>";
