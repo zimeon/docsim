@@ -128,13 +128,13 @@ int main(int argc, char* argv[])
     cout << myname << ": stripped common, left " << allkeys.size() << " keys\n";
     cout << myname << ": got " << commonkeys.size() << " common keys\n";
 
-    string allkeysFile=prependPath(baseDir,"allkeys"+rangeId+".txt");
+    string allkeysFile=prependPath(baseDir,"allkeys"+rangeId+".keymap");
     ofstream akout;
     akout.open(allkeysFile.c_str(),ios_base::out);
     akout << allkeys;
     akout.close();
 
-    string commonkeysFile=prependPath(baseDir,"commonkeys"+rangeId+".txt");
+    string commonkeysFile=prependPath(baseDir,"commonkeys"+rangeId+".keymap");
     ofstream ckout;
     ckout.open(commonkeysFile.c_str(),ios_base::out);
     ckout << commonkeys;
