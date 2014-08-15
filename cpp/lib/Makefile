@@ -26,6 +26,9 @@ anystream.o: anystream.h anystream.cpp ../include/gzstream.h
 test_KeyTable3Element: test_KeyTable3Element.cpp KeyTable3Element.cpp KeyTable3Element.h
 	g++ $(CPPDEFS) $(CPPFLAGS) -o test_KeyTable3Element test_KeyTable3Element.cpp KeyTable3Element.cpp
 
+test_pstats: test_pstats.cpp pstats.cpp pstats.h
+	g++ $(CPPDEFS) $(CPPFLAGS) -o test_pstats test_pstats.cpp pstats.cpp
+
 clean:
 	rm -f test_KeyTable3Element test_pstats
 	rm -f $(OBJ)
