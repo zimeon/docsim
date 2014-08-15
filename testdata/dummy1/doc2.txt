@@ -1,0 +1,2 @@
+I am a document with one sentence
+Another document with a single sentence only

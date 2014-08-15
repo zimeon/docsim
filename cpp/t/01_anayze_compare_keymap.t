@@ -23,7 +23,7 @@ plan( tests=> 11 );
   is( file_line("$TESTTMP/commonkeys.txt",1),
       "000833734014c287  [3963,16] 13 17 25 45 46 48 53 57 59 63 66 89 92 95 99 100",
       "one common key in 16 documents" );
-  is( -s "$TESTTMP/allkeys.txt",  3547487,
+  is( -s "$TESTTMP/allkeys.keymap",  3547487,
       "known size output allkeys.txt");
 
   note("Use docsim-compare to find an exact match document in the corpus from KeyMap");
@@ -32,7 +32,7 @@ plan( tests=> 11 );
   my $candidates="$TESTTMP/candidates.dpv";
   unlink($sharekeys) if (-e $sharedkeys);
   unlink($candidates) if (-e $candidates);
-  run("./docsim-compare -m $TESTTMP/allkeys.txt -f $TESTDATA/arxiv-publicdomain/1012/1012.5086.txt.gz");
+  run("./docsim-compare -m $TESTTMP/allkeys.keymap -f $TESTDATA/arxiv-publicdomain/1012/1012.5086.txt.gz");
   is( ($? >> 8), 0, "zero exit code" );
   is( -s "$TESTTMP/newdoc.keymap", 32734,
       "known size newdoc.keymap");

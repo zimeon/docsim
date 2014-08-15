@@ -3,10 +3,11 @@ package test_config;
 use Test::More;
 
 use base qw(Exporter);
-our @EXPORT_OK = qw($TESTTMP $TESTDATA file_line run);
+our @EXPORT_OK = qw($TESTTMP $TESTDATA file_line file_count_lines run);
 
 our $TESTTMP = '/tmp';
 our $TESTDATA = '../testdata';
+
 
 =head3 run(@_)
 
@@ -43,6 +44,27 @@ sub file_line {
     }
     return undef;
 }
+
+
+=head3 file_count_lines($file)
+
+Return line number of line in $file. Will return undef for
+any error case but otherwise be silent.
+
+=cut
+
+sub file_count_lines {
+    my ($file, $line) = @_;
+    if (open(my $fh, '<', $file)) {
+        my $n=0;
+        while (<$fh>) {
+	    $n++;
+	}
+	close($fh);
+	return($n);
+    }
+    return undef;
+}  
 
 1;
 
