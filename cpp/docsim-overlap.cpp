@@ -17,16 +17,16 @@
 
 const string myname="docsim-overlap";
 const string mydesc=
-"In -c mode writes HTML snippets from the direct comparison of two normalized text files. "
+"Find the overlap between two documents, optionally reporting statistics or "
+"writing and HTML comparison document.\n\n"
+"Compare two documents In -c mode writes HTML snippets from the direct comparison of two normalized text files. "
 "With -C <base> also specified then the output file then the base filename for the output "
 "comparisons can be overridden, output will be to <base>_short.html and <base>_long.html.\n\n"
 "In -s mode there is just a single results line starting with #STATS#: and followed by six "
 "numbers which are 'numWords numMatches longestChunkSize' from the perspective of document 1 and "
 "then from the perspective of document 2.\n\n"
-"If none of the -c -C or -s modes are specified then simply looks for the specific kgramkey "
-"given on the command line\n\n"
-"Does not yet have the ability to import a set a common kgrams which could then be used to "
-"mark document(s)";
+"FIXME: Does not yet have the ability to import a set a common kgrams which could "
+"then be used to change the marking of document(s)";
 
 int main(int argc, char* argv[])
 {
@@ -57,17 +57,19 @@ int main(int argc, char* argv[])
     }
 
     if (!comparisonStatsOnly) {
-      string allkeysFile=prependPath(baseDir,"allkeys.txt");
+      string allkeysFile=prependPath(baseDir,"allkeys.keymap");
       ofstream akout;
       akout.open(allkeysFile.c_str(),ios_base::out);
       akout << allkeys;
       akout.close();
+      if (VERBOSE) cout << myname << ": wrote all keys to " << allkeysFile << endl;
  
-      string sharedkeysFile=prependPath(baseDir,"sharedkeys.txt");
+      string sharedkeysFile=prependPath(baseDir,"sharedkeys.keymap");
       ofstream skout;
       skout.open(sharedkeysFile.c_str(),ios_base::out);
       skout << sharedkeys;
       skout.close();
+      if (VERBOSE) cout << myname << ": wrote shared keys to " << sharedkeysFile << endl;
     }
  
     // Extract simple keyhashset of shared keys from the KeyMap
@@ -76,7 +78,7 @@ int main(int argc, char* argv[])
        shared.insert(kit->first);
     }
     if (!comparisonStatsOnly) {
-      string sharedFile=prependPath(baseDir,"shared.txt");
+      string sharedFile=prependPath(baseDir,"sharedkeys.txt");
       ofstream sout;
       sout.open(sharedFile.c_str(),ios_base::out);
       sout << shared;
@@ -178,23 +180,7 @@ int main(int argc, char* argv[])
       out.close();
     }
   } else {
-    //
-    // Just look for one kgramkey specified on the command line
-    //
-    char keystr[18];
-    (void)strncpy(keystr,key.c_str(),18);
-    //  char* key1="01fda04908cdbef3";
-    kgramkey kk=stringToKgramkey(keystr);
-    cout << myname << ": looking for kgramkey '" << kgramkeyToString(kk) << "'" << endl;
-        
-    DocInfo doc;
-    doc.filename=filename1.c_str();
-    char* match=doc.findKgramInDoc(kk);
-    if (match!=(char*)NULL) {
-      cout << myname << ": Found kgram: '" << match << "'" << endl;
-    } else {
-      cout << myname << ": kgram not found in " << filename1 << endl;
-    }
+    cout << myname << ": Nothing to do, specify either -c -C or -S" << endl;
   }
   
   return 0;
