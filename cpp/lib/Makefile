@@ -42,8 +42,8 @@ test_KeyTable: test_KeyTable.cpp KeyTable.o KeyTable3Element.o KeyTable.h kgrams
 	gcc $(CPPDEFS) $(CPPFLAGS) -DSTRICT_CHECKS -c test_KeyTable.cpp
 	gcc $(CPPFLAGS) $(STDLIBS) -o test_KeyTable test_KeyTable.o options.o kgrams.o KeyTable.o KeyTable3Element.o KeyMap.o KgramInfo.o DocPair.o pstats.o
 
-test_KeyMap: test_KeyMap.o KeyMap.o KgramInfo.o kgrams.o DocPair.o options.o test_more.o
-	gcc $(CPPFLAGS) $(STDLIBS) -o test_KeyMap test_KeyMap.o KeyMap.o KgramInfo.o kgrams.o DocPair.o options.o test_more.o
+test_KeyMap: test_KeyMap.o KeyMap.o KgramInfo.o kgrams.o DocPair.o options.o TestMore.o
+	gcc $(CPPFLAGS) $(STDLIBS) -o test_KeyMap test_KeyMap.o KeyMap.o KgramInfo.o kgrams.o DocPair.o options.o TestMore.o
 
 clean:
 	rm -f test_KeyTable3Element.o test_pstats.o test_kgrams.o test_KgramInfo.o test_KeyTable.o test_KeyMap.o

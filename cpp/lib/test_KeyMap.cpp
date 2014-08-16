@@ -5,7 +5,7 @@
 #include "options.h"
 #include "kgrams.h"
 #include "KeyMap.h"
-#include "test_more.h"
+#include "TestMore.h"
 
 #include <sstream>
 
@@ -19,14 +19,17 @@ string km_str(KeyMap &km)
 
 int main(int argc, char* argv[]) 
 {
-  plan(2);
+  TestMore tm=TestMore(3);
   // Test building and display of KeyMap
   //
-  KeyMap km;
-  is( km_str(km), "", "Empty Keymap" );
+  KeyMap km1;
+  tm.is( km_str(km1), "", "Empty Keymap" );
+
+  KeyMap km2;
+  tm.is( km_str(km2), "", "Empty Keymap" );
   KgramInfo ki1;
   ki1.addOccurrence(1);
-  km.insert(KeyMap::value_type(stringToKgramkey((char*)"0000000000000111"),&ki1));
-  is( km_str(km), "0000000000000111  [1,1] 1\n", "One entry" );
-  done_testing();
+  km2.insert(KeyMap::value_type(stringToKgramkey((char*)"0000000000000111"),&ki1));
+  tm.is( km_str(km2), "0000000000000111  [1,1] 1\n", "One entry" );
+
 }
