@@ -1,6 +1,5 @@
 // Test code for KeyTable
 // Simeon Warner - 2005-07-18
-// $Id: test_KeyTable.cpp,v 1.6 2011-04-02 16:27:15 simeon Exp $
 
 #include "definitions.h"
 #include "kgrams.h"

@@ -2,8 +2,6 @@
 // Find kgram in a normalized txt file
 // Simeon Warner, 2005-
 //
-// $Id: findkgram.cpp,v 1.3 2011-03-10 00:01:39 simeon Exp $
-//
 #include "definitions.h"
 #include "options.h"
 #include "Logger.h"

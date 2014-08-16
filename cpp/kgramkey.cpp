@@ -2,8 +2,6 @@
 // Very simple program to accept kgram input and write out key
 // Simeon Warner, 2011-03-09-
 //
-// $Id: kgramkey.cpp,v 1.1 2011-03-09 23:56:10 simeon Exp $
-//
 #include "definitions.h"
 #include "options.h"
 #include "kgrams.h"
