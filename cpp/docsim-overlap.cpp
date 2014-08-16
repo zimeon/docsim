@@ -62,14 +62,14 @@ int main(int argc, char* argv[])
       akout.open(allkeysFile.c_str(),ios_base::out);
       akout << allkeys;
       akout.close();
-      if (VERBOSE) cout << myname << ": wrote all keys to " << allkeysFile << endl;
+      if (VERBOSE) cout << myname << ": wrote all keys KeyMap to " << allkeysFile << endl;
  
       string sharedkeysFile=prependPath(baseDir,"sharedkeys.keymap");
       ofstream skout;
       skout.open(sharedkeysFile.c_str(),ios_base::out);
       skout << sharedkeys;
       skout.close();
-      if (VERBOSE) cout << myname << ": wrote shared keys to " << sharedkeysFile << endl;
+      if (VERBOSE) cout << myname << ": wrote shared keys KeyMap to " << sharedkeysFile << endl;
     }
  
     // Extract simple keyhashset of shared keys from the KeyMap
@@ -83,6 +83,7 @@ int main(int argc, char* argv[])
       sout.open(sharedFile.c_str(),ios_base::out);
       sout << shared;
       sout.close();
+      if (VERBOSE) cout << myname << ": wrote shared keys keyhashset to " << sharedFile << endl;
     }
 
     MarkedDoc mud1;

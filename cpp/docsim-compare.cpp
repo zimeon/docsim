@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
       cerr << myname << ": no keys read, aborting" << endl;
       exit(1);
     }
-    filterKeymap(allkeys,newkeys,sharedkeys);
+    filterKeyMap(allkeys,newkeys,sharedkeys);
   } else if (keyTableFile!="" || keyTableBase!="") {
     KeyTable dummyKT(bitsInKeyTable,true);
     indexhashset indexes;
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
  
   cout << myname << ": " << sharedkeys.size() << " keys from new doc appear in corpus\n";
 
-  string sharedkeysFile=prependPath(baseDir,"sharedkeys.txt");
+  string sharedkeysFile=prependPath(baseDir,"sharedkeys.keymap");
   ofstream sout;
   sout.open(sharedkeysFile.c_str(),ios_base::out);
   sout << sharedkeys;
@@ -115,5 +115,6 @@ int main(int argc, char* argv[])
   cdout << dpv;
   cdout.close();
   
+  if (VERBOSE) cout << myname << ": done." << endl;
   return 0;
 }
