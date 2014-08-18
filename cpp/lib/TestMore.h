@@ -16,6 +16,7 @@ public:
   TestMore(int n=0);
   ~TestMore(void);
   void is(string a, string b, string msg="");
+  void ok(bool t, string msg="");
   void plan(int num);
   void done_testing();
   void pass(string msg);

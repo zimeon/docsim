@@ -1,52 +1,78 @@
 // Test code for KgramInfo.ccp/KgramInfo.h
 // Simeon Warner - 2005-08-10
-// $Id: test_KgramInfo.cpp,v 1.1 2005/08/10 21:08:31 simeon Exp $
 
 #include "definitions.h"
 #include "kgrams.h"
 #include "KgramInfo.h"
+#include "TestMore.h"
 
 #include <sstream>
 
+string ki_str(KgramInfo &ki)
+{
+  ostringstream os;
+  os << ki;
+  return(os.str());
+}
+
 int main(int argc, char* argv[]) 
 {
-  cout << "test_KgramInfo" << endl;
+  TestMore tm=TestMore(17);
+
   ///////////////////////////////////////////////////////////////
-  // Test building and display of KeyInfo
+  // Test building and display of KgramInfo
   //
   KgramInfo ki1(1);
-  cout << "Created KgramInfo ki1, initial form: " << ki1 << endl;
-  //
+  tm.is( ki_str(ki1), "[1,1] 1",
+         "Created KgramInfo ki1, with doc 1" );
   ki1.addOccurrence(2);
-  cout << "Added doc 2: " << ki1 << endl;
-  //
+  tm.is( ki_str(ki1), "[2,2] 1 2",
+         "Added doc 2" );
   ki1.addOccurrence(2);
-  cout << "Added doc 2 again: " << ki1 << endl;
-  //
+  tm.is( ki_str(ki1), "[3,2] 1 2",
+         "Added doc 2 again" );
   ki1.addOccurrence(2);
-  cout << "Added doc 2 again: " << ki1 << endl;
-  //
+  tm.is( ki_str(ki1), "[4,2] 1 2",
+         "Added doc 2 again" );
   ki1.addOccurrence(3);
-  cout << "Added doc 3: " << ki1 << endl;
+  tm.is( ki_str(ki1), "[5,3] 1 2 3",
+         "Added doc 3" );
 
   ////////////////////////////////////////////////////////////////
   // Creation and use of initially blank KgramInfo object
   KgramInfo ki2;
-  cout << "Created blank KgramInfo ki2, initial form: " << ki2<< endl;
-  //
+  tm.is( ki_str(ki2), "[0,0]",
+         "Created KgramInfo ki2, initial empty form" );
   ki2.addOccurrence(10);
-  cout << "Added doc 10: " << ki2 << endl;
+  tm.is( ki_str(ki2), "[1,1] 10",
+         "Added doc 10" );
 
   ////////////////////////////////////////////////////////////////
   // Reading...
-  cout << endl << "Now to test reading..." << endl;
-
-  string buf="[5,4] 1 2 3 4";
-  istringstream in(buf);
-  KgramInfo kin;
-  in >> kin;
-  cout << "Read '" << buf << "'" << endl;
-  cout << "Got  '" << kin << "'" << endl;
-  //
-  cout << "Done." << endl;
+  struct tp {
+    string inp;
+    string out;
+  };
+  tp tests[5];
+  tests[0].inp = "[0,0]";
+  tests[0].out = "[0,0]";
+  tests[1].inp = "[0,0]\n";
+  tests[1].out = "[0,0]";
+  tests[2].inp = "[0,0]       \n";
+  tests[2].out = "[0,0]";
+  tests[3].inp = "[0,0]\nnext line";
+  tests[3].out = "[0,0]";
+  tests[4].inp = "[5,4] 1 2 3 4";
+  tests[4].out = "[5,4] 1 2 3 4";
+  for (int j=0; j<5; j++) {
+    istringstream in(tests[j].inp);
+    KgramInfo kin;
+    in >> kin;
+    tm.is( ki_str(kin), tests[j].out, "Read test" );
+    if (j==3) {
+      tm.ok( in.good(), "Stream good" );
+    } else {
+      tm.ok( not in.good(), "Stream finished" );
+    }
+  }
 }

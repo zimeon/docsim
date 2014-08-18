@@ -171,13 +171,13 @@ istream& operator>>(istream& in, KgramInfo& ki)
     in >> did;
     ki.ids[j]=did;
   }
-  while (in && ((ch=in.get())!='\n')) { 
-    // Skip spaces to end of line
+  while (in && ((ch=in.get())!='\n') && (ch!=-1)) { 
+    // Skip spaces to end of line (\n) or end of input (-1)
     if (ch!=' ') {
       cerr << "operator>> for KgramInfo, permit trailing space, got char " << ch << ", bad input" << endl;
       in.clear(ios::badbit|in.rdstate()); // set stream bad
     }
   }
-  if (in && (ch=in.get())) { in.putback(ch); } // read ahead to set in false if next to end
+  if (in && (ch=in.get())) { in.putback(ch); } // read ahead to set in false if next to end of stream
   return in;
 }

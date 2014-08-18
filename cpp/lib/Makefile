@@ -35,8 +35,8 @@ test_pstats: test_pstats.cpp pstats.cpp pstats.h
 test_kgrams: test_kgrams.o options.o kgrams.o 
 	gcc $(CPPFLAGS) $(STDLIBS) -o test_kgrams test_kgrams.o kgrams.o options.o
 
-test_KgramInfo: test_KgramInfo.o KgramInfo.o kgrams.o options.o
-	gcc $(CPPFLAGS) $(STDLIBS) -o test_KgramInfo test_KgramInfo.o KgramInfo.o kgrams.o options.o
+test_KgramInfo: test_KgramInfo.o KgramInfo.o kgrams.o options.o TestMore.o
+	gcc $(CPPFLAGS) $(STDLIBS) -o test_KgramInfo test_KgramInfo.o KgramInfo.o kgrams.o options.o TestMore.o
 
 test_KeyTable: test_KeyTable.cpp KeyTable.o KeyTable3Element.o KeyTable.h kgrams.o KeyMap.o KgramInfo.o options.o pstats.o DocPair.o
 	gcc $(CPPDEFS) $(CPPFLAGS) -DSTRICT_CHECKS -c test_KeyTable.cpp

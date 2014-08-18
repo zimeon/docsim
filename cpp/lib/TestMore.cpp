@@ -31,6 +31,16 @@ void TestMore::is(string a, string b, string msg)
   }
 }
 
+void TestMore::ok(bool t, string msg)
+{
+  num++;
+  if (t) {
+    pass(msg);
+  } else {
+    fail(msg,"false","true");
+  }
+}
+
 void TestMore::plan(int n)
 {
   plan_num=n;
