@@ -20,6 +20,7 @@
 #define DEFAULT_DATA_DIR "."
 #define DEFAULT_KEYS_FOR_MATCH 10
 #define DEFAULT_CANDIDATES_FILE "candidates.dpv"
+#define DEFAULT_BITS_IN_KEYTABLE 28
 
 // Debugging messages
 int VERBOSE=0;
@@ -42,7 +43,8 @@ string link2="";
 string key="";
 string kgram="";
 string keyMapFile="";
-int bitsInKeyTable=0;
+bool bFlag=false;
+int bitsInKeyTable=DEFAULT_BITS_IN_KEYTABLE;
 string keyTableFile="";
 string keyTableBase="";
 int keysForMatch=DEFAULT_KEYS_FOR_MATCH;
@@ -109,6 +111,7 @@ int readOptions(int argc, char* argv[], string argsUsed, string myname, string u
       keyMapFile=(string)optarg;
       break; 
     case 'b':
+      bFlag=true;
       bitsInKeyTable=atoi(optarg);
       break;
     case 't':
@@ -209,7 +212,7 @@ void writeUsage(char* args_str, string myname, string usage)
     switch(*j) {
     case 'b':
       shortArgs << " -b <#bits>";
-      longArgs << "  -b <#bits>         Number of bits to use in KeyTable (28bits fits in 32bit linux)" << endl;
+      longArgs << "  -b <#bits>         Number of bits to use in KeyTable (default " << DEFAULT_BITS_IN_KEYTABLE << ", 28bits fits in 32bit linux)" << endl;
       break;
     case 'c':
       shortArgs << " -c";

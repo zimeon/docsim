@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
     diout.close();
   }
 
-  if (bitsInKeyTable>0) {
+  if (bFlag) {
 
     cout << myname << ": Will create KeyTable using " << bitsInKeyTable << " bit keys" << endl;
     KeyTable keytable(bitsInKeyTable,false,selectBits,selectMatch);

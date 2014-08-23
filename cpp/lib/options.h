@@ -28,6 +28,7 @@ extern string link2;
 extern string key;
 extern string kgram;
 extern string keyMapFile;
+extern bool bFlag;
 extern int bitsInKeyTable;
 extern string keyTableFile;
 extern string keyTableBase;
