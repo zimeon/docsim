@@ -137,8 +137,11 @@ KeyTable::KeyTable(int bits, bool dummy, int selectBits, int selectBitsMatch)
 //
 KeyTable::~KeyTable(void)
 {
-  delete table1;
-  delete table2;
+  cerr << "~KeyTable #1" << endl;
+  //if (table1!=(int*)NULL) delete[] table1;
+  cerr << "~KeyTable #2" << endl;
+  //delete[] table2;
+  cerr << "~KeyTable #3" << endl;
 }
 
 
@@ -399,7 +402,7 @@ void KeyTable::getOverlapIds(intv& docids, int n)
    
   cout << "KeyTable::getOverlapIds: looked at " << maxDocid << " ids and returned " 
        << docids.size() << " ids which have at least " << n << " overlaps" << endl;
-  delete did;
+  delete[] did;
 } 
 
 
@@ -464,9 +467,9 @@ void KeyTable::getOverlapDocs(DocPairVector& docpairs, intv& docids, int n)
 
 
 // Given the current KeyTable (representing the keys in the corpus), find the
-// overlap with keys in the keymap kms and put all of these in kmd.
+// overlap with keys in the KeyMap kms and put all of these in kmd.
 //
-void KeyTable::getOverlapKeys(keymap& kms, keymap& kmd)
+void KeyTable::getOverlapKeys(KeyMap& kms, KeyMap& kmd)
 {
   indexhashset indexes;
   keysToIndexes(kms,indexes);
@@ -474,7 +477,7 @@ void KeyTable::getOverlapKeys(keymap& kms, keymap& kmd)
 }
 
 
-void KeyTable::getOverlapKeys(indexhashset& indexes, keymap& kmd)
+void KeyTable::getOverlapKeys(indexhashset& indexes, KeyMap& kmd)
 {
   intv docids;
   for (indexhashset::const_iterator iit=indexes.begin(); iit!=indexes.end(); iit++) {
@@ -488,7 +491,7 @@ void KeyTable::getOverlapKeys(indexhashset& indexes, keymap& kmd)
       // in the KeyMap with the same key (index). If this occurs then
       // the kmd.insert(..) below will do nothing and will leave the newly
       // create KgramInfo object kip as a memory leak.
-      keymap::const_iterator kmdi=kmd.find((kgramkey)*iit);
+      KeyMap::const_iterator kmdi=kmd.find((kgramkey)*iit);
       if (kmdi!=kmd.end()) {
         cerr << "KeyTable::getOverlapKeys: Doing replace of replace of index " << *iit << endl;
         KgramInfo* old_kip=kmdi->second;
@@ -500,7 +503,7 @@ void KeyTable::getOverlapKeys(indexhashset& indexes, keymap& kmd)
         //kmd.erase(kmdi);
       }
 #endif
-      kmd.insert(keymap::value_type((kgramkey)*iit,kip));
+      kmd.insert(KeyMap::value_type((kgramkey)*iit,kip));
     }
   }
 }
@@ -589,16 +592,16 @@ void KeyTable::writeStats(ostream& out) {
 }
 
 
-// Extract keys from input keymap and add to list of KeyTable indexes
+// Extract keys from input KeyMap and add to list of KeyTable indexes
 // in indexes. Does this using the MAX_INDEX bitmask to chop off all 
 // but the required number of low bytes.
 //
 // By using an unordered_set (type indexhashset) for indexes we avoid 
 // duplicate entries in indexes.
 //
-void KeyTable::keysToIndexes(keymap& km, indexhashset& indexes)
+void KeyTable::keysToIndexes(KeyMap& km, indexhashset& indexes)
 {
-  for (keymap::const_iterator kmit=km.begin(); kmit!=km.end(); kmit++) {
+  for (KeyMap::const_iterator kmit=km.begin(); kmit!=km.end(); kmit++) {
     int i=(int)((kmit->first)&MAX_INDEX);
     indexes.insert(i);
   }
@@ -752,7 +755,7 @@ int KeyTable::writeMultiFile(string& baseName, bool allTables, long int maxFileS
       bytesWritten+=writeTables23(ktout,&position,maxFileSize);
     }
   } while (position>0);
-  cout << "KeyTable::writeMultiFile: wrote " << bytesWritten << " in " << numFiles << " files." << endl;
+  cout << "KeyTable::writeMultiFile: wrote " << bytesWritten << " in " << numFiles << " files" << endl;
   return(numFiles);
 }
 
@@ -844,13 +847,13 @@ int KeyTable::stringToIndex(char* keystr)
 
 
 // Reads data from a KeyTable format file and fills either a KeyTable (if km ptr
-// is NULL) or a keymap (is km ptr is not NULL). A dummy KeyTable object of the
-// correct size to correspond with the file being read is adequate is a keymap
+// is NULL) or a KeyMap (is km ptr is not NULL). A dummy KeyTable object of the
+// correct size to correspond with the file being read is adequate is a KeyMap
 // is being created
 //
-// Returns the number of keys added to the KeyTable/keymap
+// Returns the number of keys added to the KeyTable/KeyMap
 //
-int KeyTable::readTables123(istream& in, indexhashset* filterKeys, keymap* km)
+int KeyTable::readTables123(istream& in, indexhashset* filterKeys, KeyMap* km)
 {
   // Sanity check
   if (!in || in.eof()) {
@@ -886,11 +889,11 @@ int KeyTable::readTables123(istream& in, indexhashset* filterKeys, keymap* km)
     }
     if (VERY_VERBOSE || (VERBOSE && (line%1000000==0))) { 
       cout << "KeyTable::readTables123[" << line << "] read " << kgramkeyToString(key) << " with " << docids.size() << " ids, ";
-      if (km==(keymap*)NULL) {
+      if (km==(KeyMap*)NULL) {
         cout << "KeyTable stats:" << endl;
         writeStats(cout);
       } else {
-        cout << "keymap has " << km->size() << " entries" << endl;
+        cout << "KeyMap has " << km->size() << " entries" << endl;
       }
     }
     //
@@ -898,18 +901,20 @@ int KeyTable::readTables123(istream& in, indexhashset* filterKeys, keymap* km)
     // list is given by there is no match
     if ( (pruneAbove==0 || (int)docids.size()<=pruneAbove) &&
          (filterKeys==(indexhashset*)NULL || (filterKeys->find(key)==filterKeys->end())) ) {
-      //===== Add key and ids to KeyTable or keymap =====
-      if (km==(keymap*)NULL) {
+      //===== Add key and ids to KeyTable or KeyMap =====
+      numKeys++;
+      if (km==(KeyMap*)NULL) {
         // KeyTable...
         numDocidsInRead=docids.size()+1+docids.size()/4;
         for (unsigned int j=0; j<docids.size(); j++) {
+	  //cout << "addKey " << kgramkeyToString(key) << " " << docids[j] << endl;
           addKey(key,docids[j]);
         }
       } else {
-        // keymap...
+        // KeyMap...
         //cout << "km->insert(" << kgramkeyToString(key) << ",...)" << endl;
         KgramInfo* kip=new KgramInfo(docids);
-        km->insert(keymap::value_type((kgramkey)key,kip));
+        km->insert(KeyMap::value_type((kgramkey)key,kip));
       }
     }
     //
@@ -929,7 +934,7 @@ int KeyTable::readTables123(istream& in, indexhashset* filterKeys, keymap* km)
 // Format is dummy number (must be in sequence but not necessarily complete) and 
 // then document list on each line. Dummy number is 'XX######' where # is a hex digit.
 // 
-int KeyTable::readTables23(istream& in, indexhashset* filterKeys, keymap* km)
+int KeyTable::readTables23(istream& in, indexhashset* filterKeys, KeyMap* km)
 {
   cerr << "KeyTable::readTables23 NOT YET IMPLEMENTED!!" << endl;
   exit(99);
@@ -938,7 +943,7 @@ int KeyTable::readTables23(istream& in, indexhashset* filterKeys, keymap* km)
 }
 
 
-int KeyTable::readMultiFile(string& baseName, indexhashset* filterKeys, keymap* km)
+int KeyTable::readMultiFile(string& baseName, indexhashset* filterKeys, KeyMap* km)
 {
   int numFiles=0;
   bool allTables=true;
@@ -976,7 +981,12 @@ int KeyTable::readMultiFile(string& baseName, indexhashset* filterKeys, keymap* 
       exit(2);
     }
   } while (true);
-  cout << "KeyTable::readMultiFile: read " << numFiles << " files." << endl;
+  cout << "KeyTable::readMultiFile: read " << numKeys << " keys from " << numFiles << " KeyTable files";
+  if (km==(KeyMap*)NULL) {
+    cout << " to a KeyTable" << endl;
+  } else {
+    cout << " to a KeyMap of size " << km->size() << endl;
+  }
   return(numFiles);
 }
 

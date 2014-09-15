@@ -46,9 +46,9 @@ public:
 
   void getOverlapIds(intv& docids, int n);
   void getOverlapDocs(DocPairVector& docpairs, intv& docids, int n);
-  void getOverlapKeys(keymap& kms, keymap& kmd);
-  void getOverlapKeys(indexhashset& indexes, keymap& kmd);
-  void keysToIndexes(keymap& km, indexhashset& indexes);
+  void getOverlapKeys(KeyMap& kms, KeyMap& kmd);
+  void getOverlapKeys(indexhashset& indexes, KeyMap& kmd);
+  void keysToIndexes(KeyMap& km, indexhashset& indexes);
   
   void writeStats(ostream& out);
   int writeTables123(ostream& out, int* positionPtr=(int*)NULL, long int bytes=-1);
@@ -58,9 +58,9 @@ public:
 
   void setPruneAbove(int p);
   void noPrune(void);
-  int readTables123(istream& in, indexhashset* filterKeys=(indexhashset*)NULL, keymap* km=(keymap*)NULL);
-  int readTables23(istream& in, indexhashset* filterKeys=(indexhashset*)NULL, keymap* km=(keymap*)NULL);
-  int readMultiFile(string& baseName, indexhashset* filterKeys=(indexhashset*)NULL, keymap* km=(keymap*)NULL);
+  int readTables123(istream& in, indexhashset* filterKeys=(indexhashset*)NULL, KeyMap* km=(KeyMap*)NULL);
+  int readTables23(istream& in, indexhashset* filterKeys=(indexhashset*)NULL, KeyMap* km=(KeyMap*)NULL);
+  int readMultiFile(string& baseName, indexhashset* filterKeys=(indexhashset*)NULL, KeyMap* km=(KeyMap*)NULL);
 
   friend ostream& operator<<(ostream& out, KeyTable& k);
   friend istream& operator>>(istream& in, KeyTable& k);
