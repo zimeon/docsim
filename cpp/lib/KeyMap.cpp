@@ -1,5 +1,13 @@
 // KeyMap object
 // Simeon Warner - 2005-08-24..
+//
+// A KeyMap is a mapping from key values to KgramInfo objects implemented
+// as a hash (see header file for basis on STL hash). Access is provided
+// through either an iterator (KeyMap::iterator) or the find(...) method. 
+// Extra entries are added with insert(KeyMap::value_type(key,kgraminfo)).
+//
+// Each KgramInfo value has a list of document ids (in ki.ids[]) and some
+// counting information.
 
 #include "definitions.h"
 #include "options.h"
@@ -14,17 +22,18 @@ KeyMap::KeyMap()
 }
 
 
-// Clean up memory on destruct, each element in the keymap has
-// a KgramInfo object as the value. If code uses the keymap type
-// directly then an explcit 
+// Clean up memory on destruct, each element in the KeyMap has
+// a KgramInfo object as the value.
 //
 KeyMap::~KeyMap(void)
 {
-  // cerr << "Called KeyMap destructor" << endl;
+  if (VERY_VERBOSE) cerr << "Called KeyMap destructor" << endl;
   for (KeyMap::iterator kit=begin(); kit!=end(); kit++) { 
-    delete kit->second;
+    //if (kit->second!=(KgramInfo*)NULL) {
+    //  delete kit->second;
+    //}
   }
-  clear();
+  
 }
 
 
@@ -38,7 +47,7 @@ KeyMap::~KeyMap(void)
 // 
 void KeyMap::getCommonDocs(DocPairVector& dpv, int n, docid id2)
 {
-  cout << "getCommonDocs: called on keymap with " << size() << " keys, threshold=" << n << endl;
+  cout << "getCommonDocs: called on KeyMap with " << size() << " keys, threshold=" << n << endl;
   // Find largest docid
   docid maxDocid=0;
   for (KeyMap::iterator kit=begin(); kit!=end(); kit++) {
@@ -61,7 +70,7 @@ void KeyMap::getCommonDocs(DocPairVector& dpv, int n, docid id2)
     overlap[j]=0;
   }
 
-  // Now run through complete keymap and increment count for each time
+  // Now run through complete KeyMap and increment count for each time
   // a docid appears
   for (KeyMap::iterator kit=begin(); kit!=end(); kit++) {
     // kit->second is KgramInfo object, has ids[0..idsSize]
@@ -85,8 +94,7 @@ void KeyMap::getCommonDocs(DocPairVector& dpv, int n, docid id2)
 
 //===================================================================================
 //
-// Non-member utility functions to write and read 'keymap' objects which are
-// thus inherited by KeyMaps.
+// Non-member utility functions to write and read KeyMap objects.
 //
 // (might want to have a binary format for these if they are to be used
 // with large objects)
@@ -95,10 +103,10 @@ void KeyMap::getCommonDocs(DocPairVector& dpv, int n, docid id2)
 //   kgramkey KgramInfo
 // If there is no KgramInfo then the string '[null]' is used in its place
 //
-ostream& operator<<(ostream& out, keymap& keys)
+ostream& operator<<(ostream& out, KeyMap& keys)
 {
-  if (VERY_VERBOSE) cout << "keymap::operator<<: writing keymap with " << keys.size() << " entries" << endl;
-  for (keymap::iterator kit=keys.begin(); kit!=keys.end(); kit++) {
+  if (VERY_VERBOSE) cout << "KeyMap::operator<<: writing KeyMap with " << keys.size() << " entries" << endl;
+  for (KeyMap::iterator kit=keys.begin(); kit!=keys.end(); kit++) {
     out << kgramkeyToString(kit->first) << ' ';
     if (kit->second==(KgramInfo*)NULL) {
       out << "[null]\n";
@@ -110,41 +118,41 @@ ostream& operator<<(ostream& out, keymap& keys)
 }
 
 
-istream& operator>>(istream& in, keymap& keys)
+istream& operator>>(istream& in, KeyMap& keys)
 {
-  if (VERY_VERBOSE) cout << "keymap::operator>>: reading keymap with " << keys.size() << " entries beforehand" << endl;
+  if (VERY_VERBOSE) cout << "KeyMap::operator>>: reading KeyMap with " << keys.size() << " entries beforehand" << endl;
   char kstr[KGRAMKEYDIGITS];
   kgramkey key;
-  while (in) {  
-    KgramInfo* ki=new KgramInfo();
-    in >> kstr >> *ki;
+  while (in.good()) {  
+    KgramInfo ki=new KgramInfo();
+    in >> kstr >> ki;
     key=stringToKgramkey(kstr);
-    keys.insert(keymap::value_type(key,ki));
-    //if (VERY_VERBOSE) cout << "keymap::operator>>: read: " << kgramkeyToString(key) << ki << endl;
+    keys.insert(KeyMap::value_type(key,&ki));
+    if (VERY_VERBOSE) cout << "KeyMap::operator>>: read: " << kgramkeyToString(key) << ki << endl;
   }
-  if (VERY_VERBOSE) cout << "keymap::operator>>: read keymap, now has " << keys.size() << " entries" << endl;
+  if (VERY_VERBOSE) cout << "KeyMap::operator>>: read KeyMap, now has " << keys.size() << " entries" << endl;
   return in;
 }
 
 
 //===================================================================================
-// Takes two keymaps (ks and kf) and add all shared to the a third (kr).
+// Takes two KeyMaps (ks and kf) and add all shared to the a third (kr).
 //
-// Implememted by interating over all keys in the first keymap and searching for the
+// Implememted by interating over all keys in the first KeyMap and searching for the
 // key in the second. Adds to third (kr) if found. In normal use we expect kr to be 
 // empty when called but this need not be the case.
 //
-void filterKeymap(keymap& ks, keymap& kf, keymap& kr)
+void filterKeyMap(KeyMap& ks, KeyMap& kf, KeyMap& kr)
 {
-  for (keymap::iterator kfit=kf.begin(); kfit!=kf.end(); kfit++) {
+  for (KeyMap::iterator kfit=kf.begin(); kfit!=kf.end(); kfit++) {
     //cout << "kfit: " << *kfit->second << endl;
-    keymap::iterator ksit=ks.find(kfit->first);
+    KeyMap::iterator ksit=ks.find(kfit->first);
     if (ksit!=ks.end()) {
       // This kgram is in both maps
       //cout << "ksit: " << *ksit->second << endl;
       KgramInfo* kip=new KgramInfo(ksit->second);
       //cout << kip  << endl;
-      kr.insert(keymap::value_type(ksit->first,kip));
+      kr.insert(KeyMap::value_type(ksit->first,kip));
     }
   }
 }

@@ -21,11 +21,6 @@ using namespace std;
   typedef std::tr1::unordered_map<kgramkey,KgramInfo*> keymap;
 #endif
 
-ostream& operator<<(ostream& out, keymap& keys);
-istream& operator>>(istream& in, keymap& keys);
-void eraseKeymap(keymap& keys);
-void filterKeymap(keymap& ks, keymap& kf, keymap& kr);
-
 class KeyMap: public keymap {
 public:
   // METHODS
@@ -33,5 +28,9 @@ public:
   ~KeyMap(void);
   void getCommonDocs(DocPairVector& dpv, int n, docid id2=9999999);
 };
+
+ostream& operator<<(ostream& out, KeyMap& keys);
+istream& operator>>(istream& in, KeyMap& keys);
+void filterKeyMap(KeyMap& ks, KeyMap& kf, KeyMap& kr);
 
 #endif /* #ifndef __INC_KeyMap */
