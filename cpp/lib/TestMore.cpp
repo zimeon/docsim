@@ -31,6 +31,30 @@ void TestMore::is(string a, string b, string msg)
   }
 }
 
+void TestMore::is(int a, int b, string msg)
+{
+  num++;
+  if (a==b) {
+    pass(msg);
+  } else {
+    string astr="a";
+    string bstr="b";
+    fail(msg,astr,bstr);
+  }
+}
+
+// Pass is 'a' contains 'b'
+//
+void TestMore::contains(string a, string b, string msg)
+{
+  num++;
+  if (a.find(b)!=string::npos) {
+    pass(msg);
+  } else {
+    fail(msg,a,b);
+  }
+}
+
 void TestMore::ok(bool t, string msg)
 {
   num++;
@@ -50,20 +74,20 @@ void TestMore::done_testing()
 {
   if (plan_num==0) {
     if (fail_num>0) {
-      printf("FAIL %d/%d (no plan)\n",fail_num,pass_num);
+      printf("FAIL %d/%d (no plan)\n",fail_num,pass_num+fail_num);
     } else {
       printf("OK %d (no plan)\n",pass_num);
     }
   } else if (num==plan_num) {
     if (fail_num>0) {
-      printf("FAIL %d/%d\n",fail_num,pass_num);
+      printf("FAIL %d/%d\n",fail_num,pass_num+fail_num);
     } else {
       printf("OK %d\n",pass_num);
     }
 
   } else {
     if (fail_num>0) {
-      printf("FAIL %d/%d (planned %d, ran %d)\n",fail_num,pass_num,plan_num,num);
+      printf("FAIL %d/%d (planned %d, ran %d)\n",fail_num,pass_num+fail_num,plan_num,num);
     } else {
       printf("DUBIOUS %d (planned %d, ran %d)\n",pass_num,plan_num,num);
     }
@@ -81,5 +105,7 @@ void TestMore::fail(string msg, string got, string expected)
 {
   fail_num++;
   printf("[%03d] FAILED %s\n",num,msg.c_str());
-  printf("got '%s', expected '%s'\n",got.c_str(),expected.c_str());
+  if (got.size()>0 or expected.size()>0) {
+    printf("got '%s', expected '%s'\n",got.c_str(),expected.c_str());
+  }
 }
