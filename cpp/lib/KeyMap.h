@@ -15,10 +15,15 @@
 #include "DocPair.h"
 using namespace std;
 
-#ifdef __NO_TR1__
-  typedef hash_map<kgramkey,KgramInfo*> keymap;
-#else
-  typedef std::tr1::unordered_map<kgramkey,KgramInfo*> keymap;
+#include <ciso646> // detect std::lib
+#ifdef _LIBCPP_VERSION
+    typedef std::unordered_map<kgramkey,KgramInfo*> keymap;
+#else 
+  #ifdef __NO_TR1__
+    typedef hash_map<kgramkey,KgramInfo*> keymap;
+  #else
+    typedef std::tr1::unordered_map<kgramkey,KgramInfo*> keymap;
+  #endif
 #endif
 
 class KeyMap: public keymap {

@@ -7,6 +7,11 @@
 
 #include "definitions.h"
 
+// Define functions with defaults here because that is not permitted in friend definition
+class MarkedDoc;
+void writeMarkedUpDocs(ostream& out, MarkedDoc& doc1, MarkedDoc& doc2, bool shortForm=false);
+void writeSimilaritySummary(ostream& out, MarkedDoc& doc1, MarkedDoc& doc2, bool HTML=true);
+
 class MarkedDoc
 {
 public:
@@ -31,8 +36,8 @@ public:
   int writeAnchorLabel(ostream& out, int word, int num); 
   
   friend void extendMarkups(MarkedDoc& doc1, MarkedDoc& doc2);
-  friend void writeMarkedUpDocs(ostream& out, MarkedDoc& doc1, MarkedDoc& doc2, bool shortForm=false);
-  friend void writeSimilaritySummary(ostream& out, MarkedDoc& doc1, MarkedDoc& doc2, bool HTML=true);
+  friend void writeMarkedUpDocs(ostream& out, MarkedDoc& doc1, MarkedDoc& doc2, bool shortForm);
+  friend void writeSimilaritySummary(ostream& out, MarkedDoc& doc1, MarkedDoc& doc2, bool HTML);
   friend ostream& operator<<(ostream& out, MarkedDoc& doc);
   friend bool wordsMatch(char* ch1, char* ch2);
   friend void findBestMatchingSequence(kgramkeyv& a, kgramkeyv& b, kgramkeyv& c);
