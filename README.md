@@ -1,5 +1,15 @@
 # docsim -- Document similarity programs
 
+> **This code is archived and there are no plans for further work.**
+> This code was developed to perform text overlap detection for arXiv.org
+> around 2011. Much of the work was to minimize the memory footprint of
+> truncated hashes for the several hundred-thousand document arXiv
+> corpus. Having this in-memory was necessary to implement a daemon
+> that could quickly compare any new document with the rest of the corpus,
+> and machines at the time had only a few GB of RAM. I suspect that any
+> new effort with such analysis would pick different trade-offs given
+> increased memory available. _[Simeon/2023-09-14]_
+
 ## Sentence and file based analysis
 
 This code may be run either ignoring linebreaks in input text files and 
